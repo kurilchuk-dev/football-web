@@ -2,7 +2,8 @@
 
 ## Branches
 
-- `main` — stable, always deployable. No direct work; merge via pull request.
+- `main` — production only. Updated only by releases (`develop` → `main`). No direct commits.
+- `develop` — integration branch. All work branches start from it and merge back into it.
 - Work branches: `<type>/<short-kebab-description>`
 
 | Type           | Use for                             |
@@ -19,7 +20,7 @@
 | `ci` / `build` | CI and build system                 |
 
 Rules: lowercase, digits and hyphens only; 2–5 words; one task per branch;
-branch from an up-to-date `main`; delete after merge.
+branch from an up-to-date `develop`; delete after merge.
 Examples: `feat/match-list`, `fix/header-overflow`, `chore/update-deps`.
 
 ## Commits
@@ -31,7 +32,9 @@ Examples: `feat/match-list`, `fix/header-overflow`, `chore/update-deps`.
 
 - Title follows the commit format; keep PRs small and focused.
 - `npm run check` must pass (typecheck, lint, format).
-- Squash-merge into `main`.
+- Target branch is `develop` (never `main`), squash-merge.
+- Release: open a PR `develop` → `main` (regular merge, no squash), then tag the version.
+- Hotfix: branch `hotfix/...` from `main`, PR into `main`, then merge `main` back into `develop`.
 
 ## Automated checks (Husky)
 
