@@ -1,0 +1,2 @@
+node scripts/check-branch-name.js
+npx lint-staged
