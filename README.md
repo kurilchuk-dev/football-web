@@ -1,55 +1,32 @@
-# football-web
+# React + TypeScript + Vite
 
-Frontend for the football team website: news, matches and the tournament table.
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-Backend repository: `football-api`
+Currently, two official plugins are available:
 
-## Tech stack
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-- React + TypeScript
-- Vite
-- React Router
-- TanStack Query (data fetching)
-- ESLint + Prettier
+## React Compiler
 
-## Getting started
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-```bash
-git clone <repo-url> football-web
-cd football-web
+## Expanding the Oxlint configuration
 
-npm install
-cp .env.example .env             # set the API URL
-npm run dev
+If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
 ```
 
-App: http://localhost:5173
-
-## Environment variables
-
-| Variable | Description |
-|---|---|
-| `VITE_API_URL` | Backend API URL, e.g. `http://localhost:8000/api` |
-
-## Scripts
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Start the dev server |
-| `npm run build` | Production build |
-| `npm run lint` | Run ESLint |
-| `npm run typecheck` | Run the TypeScript compiler without emitting files |
-
-## Workflow
-
-- `main` is always stable; work happens in feature branches (`feature/news-page`).
-- Every change goes through a Pull Request.
-- Commit style: `feat: add news list page`, `fix: table layout on mobile`.
-
-## Roadmap
-
-- [ ] Project setup and CI
-- [ ] Home page and layout
-- [ ] News list and details
-- [ ] Matches and tournament table
-- [ ] Responsive design
+See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
