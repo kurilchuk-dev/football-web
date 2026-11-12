@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process';
 const branch =
   process.env.BRANCH_NAME || execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
 const allowed =
-  /^(main|develop|(feat|fix|hotfix|refactor|perf|docs|style|test|chore|ci|build)\/[a-z0-9]+(-[a-z0-9]+)*)$/;
+  /^(main|develop|dependabot\/.+|(feat|fix|hotfix|refactor|perf|docs|style|test|chore|ci|build)\/[a-z0-9]+(-[a-z0-9]+)*)$/;
 
 if (branch !== 'HEAD' && !allowed.test(branch)) {
   console.error(`\n✖ Invalid branch name: "${branch}"\n`);
