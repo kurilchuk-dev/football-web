@@ -1,0 +1,50 @@
+.header {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 32px;
+  min-height: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  font-weight: 600;
+}
+
+.link {
+  padding: 12px 0;
+}
+.link:hover {
+  color: var(--accent);
+}
+.active {
+  color: var(--accent);
+}
