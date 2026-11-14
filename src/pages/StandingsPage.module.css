@@ -55,6 +55,50 @@
   font-weight: 700;
 }
 
+.table td.form,
+.table th.form {
+  text-align: center;
+  white-space: nowrap;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.dot {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  margin: 0 2px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 26px;
+  text-align: center;
+  vertical-align: middle;
+  color: #0b0f0d;
+}
+.W {
+  background: #3ddc84;
+}
+.D {
+  background: #9aa59e;
+}
+.L {
+  background: #ff6b6b;
+}
+/* On the accent-colored row of our team use dark dots with colored letters. */
+.ours .dot {
+  background: var(--on-accent);
+}
+.ours .W {
+  color: #3ddc84;
+}
+.ours .D {
+  color: #9aa59e;
+}
+.ours .L {
+  color: #ff6b6b;
+}
+
 /* Mobile first: compact table (#, team, played, goals "29:10", points). */
 .full {
   display: none;
