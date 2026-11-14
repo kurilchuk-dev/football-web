@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useOurTeam } from '@/features/teams/api';
 import styles from './Header.module.css';
+import { HomeIcon, MatchesIcon, StandingsIcon, TeamIcon } from './NavIcons';
 
 const links = [
-  { to: '/', label: 'Головна' },
-  { to: '/matches', label: 'Матчі' },
-  { to: '/standings', label: 'Таблиця' },
-  { to: '/team', label: 'Команда' },
+  { to: '/', label: 'Головна', Icon: HomeIcon },
+  { to: '/matches', label: 'Матчі', Icon: MatchesIcon },
+  { to: '/standings', label: 'Таблиця', Icon: StandingsIcon },
+  { to: '/team', label: 'Команда', Icon: TeamIcon },
 ];
 
 export function Header() {
@@ -25,28 +26,40 @@ export function Header() {
 
   return (
     <header className={styles.header}>
-      <NavLink to="/" className={styles.logo}>
-        {showLogo ? (
-          <img className={styles.logoImage} src={logo} alt="" onError={() => setFailedLogo(logo)} />
-        ) : (
-          <span className={styles.badge}>{initials}</span>
-        )}
-        {name}
-      </NavLink>
-      <nav className={styles.nav}>
-        {links.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            end
-            className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.active}` : styles.link
-            }
-          >
-            {link.label}
-          </NavLink>
-        ))}
-      </nav>
+      <div className={styles.inner}>
+        <NavLink to="/" className={styles.brand}>
+          {showLogo ? (
+            <img
+              className={styles.logoImage}
+              src={logo}
+              alt=""
+              onError={() => setFailedLogo(logo)}
+            />
+          ) : (
+            <span className={styles.badge}>{initials}</span>
+          )}
+          <span className={styles.brandText}>
+            <span className={styles.name}>{name}</span>
+          </span>
+        </NavLink>
+
+        {/* Top pill menu on desktop, fixed bottom tab bar on phones. */}
+        <nav className={styles.nav} aria-label="Основна навігація">
+          {links.map(({ to, label, Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.active}` : styles.link
+              }
+            >
+              <Icon className={styles.icon} />
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+      </div>
     </header>
   );
 }
