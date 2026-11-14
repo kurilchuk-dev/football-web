@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiGet } from './client';
-import type { StandingRow } from './types';
+import { apiGet } from '@/api/client';
+import type { StandingRow } from '@/api/types';
 
 export function useStandings() {
   return useQuery({

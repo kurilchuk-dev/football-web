@@ -1,0 +1,39 @@
+.team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.logo {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+.fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+.fallback.ours {
+  background: var(--on-accent);
+  color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .logo {
+    width: 40px;
+    height: 40px;
+  }
+}
