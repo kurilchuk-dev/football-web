@@ -102,6 +102,39 @@
   padding-right: 24px;
 }
 
+.team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.teamName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.logo {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+.logoFallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+.ours .logoFallback {
+  background: var(--on-accent);
+  color: var(--accent);
+}
+
 .place {
   display: inline-flex;
   align-items: center;
@@ -218,6 +251,11 @@
   }
   .full {
     display: table-cell;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
   }
 
   .place {

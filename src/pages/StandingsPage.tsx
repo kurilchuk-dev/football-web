@@ -45,7 +45,18 @@ export function StandingsPage() {
                     {row.position}
                   </span>
                 </td>
-                <td>{row.team.name}</td>
+                <td>
+                  <span className={styles.team}>
+                    {row.team.logo ? (
+                      <img className={styles.logo} src={row.team.logo} alt="" loading="lazy" />
+                    ) : (
+                      <span className={`${styles.logo} ${styles.logoFallback}`} aria-hidden="true">
+                        {row.team.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <span className={styles.teamName}>{row.team.name}</span>
+                  </span>
+                </td>
                 <td>{row.played}</td>
                 <td className={styles.full}>{row.won}</td>
                 <td className={styles.full}>{row.drawn}</td>

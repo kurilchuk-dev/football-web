@@ -251,12 +251,16 @@ export interface components {
       id: number;
       name: string;
       is_our_team: boolean;
+      /** Format: uri */
+      readonly logo: string | null;
     };
     Team: {
       readonly id: number;
       name: string;
       city?: string;
       is_our_team?: boolean;
+      /** Format: uri */
+      logo?: string | null;
     };
   };
   responses: never;
