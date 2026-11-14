@@ -1,17 +1,29 @@
-.heading {
+.banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin: 0 0 16px;
+  padding: 20px 18px 18px 24px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.banner::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: var(--accent);
+  box-shadow: 0 0 24px var(--accent);
 }
 
 .eyebrow {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 0 12px;
-  padding: 6px 12px;
-  max-width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
+  margin: 0 0 10px;
   color: var(--muted);
   font-size: 11px;
   font-weight: 700;
@@ -32,15 +44,65 @@
 .title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(28px, 8vw, 56px);
+  font-size: clamp(24px, 7vw, 40px);
   line-height: 1.1;
   margin: 0;
 }
 
+/* Scoreboard numbers: three equal columns on mobile, a row on the right on desktop. */
+.stats {
+  display: flex;
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  text-align: center;
+}
+.stat + .stat {
+  border-left: 1px solid var(--border);
+}
+.statValue {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.statLabel {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 @media (min-width: 768px) {
+  .banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 32px 28px 36px;
+  }
   .eyebrow {
     font-size: 13px;
-    padding: 8px 16px;
+  }
+  .stats {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .stat {
+    flex: none;
+    min-width: 96px;
+    padding: 0 20px;
+  }
+  .statValue {
+    font-size: 36px;
   }
 }
 
@@ -90,8 +152,7 @@
 }
 
 .points {
-  font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .table td.form,

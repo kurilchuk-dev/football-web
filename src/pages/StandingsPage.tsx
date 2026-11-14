@@ -11,11 +11,27 @@ export function StandingsPage() {
   if (isLoading) return <p>Завантаження...</p>;
   if (isError || !data) return <p>Не вдалося завантажити таблицю.</p>;
 
+  const stats = [
+    { label: 'команд', value: data.length },
+    { label: 'матчів', value: data.reduce((sum, row) => sum + row.played, 0) / 2 },
+    { label: 'голів', value: data.reduce((sum, row) => sum + row.goals_for, 0) },
+  ];
+
   return (
     <>
-      <header className={styles.heading}>
-        <p className={styles.eyebrow}>Чемпіонат Черкаського району</p>
-        <h1 className={styles.title}>Турнірна таблиця</h1>
+      <header className={styles.banner}>
+        <div>
+          <p className={styles.eyebrow}>Чемпіонат Черкаського району</p>
+          <h1 className={styles.title}>Турнірна таблиця</h1>
+        </div>
+        <dl className={styles.stats}>
+          {stats.map((stat) => (
+            <div key={stat.label} className={styles.stat}>
+              <dt className={styles.statLabel}>{stat.label}</dt>
+              <dd className={styles.statValue}>{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
       </header>
       <div className={styles.card}>
         <table className={styles.table}>
