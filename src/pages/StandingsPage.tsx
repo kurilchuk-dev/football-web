@@ -13,7 +13,10 @@ export function StandingsPage() {
 
   return (
     <>
-      <h1 className={styles.title}>Турнірна таблиця</h1>
+      <header className={styles.heading}>
+        <p className={styles.eyebrow}>Чемпіонат Черкаського району</p>
+        <h1 className={styles.title}>Турнірна таблиця</h1>
+      </header>
       <div className={styles.card}>
         <table className={styles.table}>
           <thead>
