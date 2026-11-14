@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { useOurTeam } from '../api/teams';
+import { useOurTeam } from '@/features/teams/api';
 import styles from './Header.module.css';
 
 const links = [

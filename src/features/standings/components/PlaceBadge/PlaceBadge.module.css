@@ -1,0 +1,41 @@
+.place {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+}
+.place1,
+.place2,
+.place3 {
+  color: #0b0f0d;
+}
+.place1 {
+  background: linear-gradient(135deg, #ffe27a, #f5b301);
+  box-shadow: 0 0 12px rgba(245, 179, 1, 0.45);
+}
+.place2 {
+  background: linear-gradient(135deg, #f1f4f6, #aeb7be);
+  box-shadow: 0 0 10px rgba(174, 183, 190, 0.35);
+}
+.place3 {
+  background: linear-gradient(135deg, #f0b27a, #b86a2c);
+  box-shadow: 0 0 10px rgba(184, 106, 44, 0.4);
+}
+/* Medals on the accent row get a dark ring so they stand out from the lime. */
+.ours.place1,
+.ours.place2,
+.ours.place3 {
+  box-shadow: 0 0 0 2px var(--on-accent);
+}
+
+@media (min-width: 768px) {
+  .place {
+    width: 26px;
+    height: 26px;
+    font-size: inherit;
+  }
+}
