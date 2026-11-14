@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { StandingRow } from '@/api/types';
 import styles from './TeamCell.module.css';
 
@@ -8,10 +9,21 @@ interface TeamCellProps {
 }
 
 export function TeamCell({ team, ours = false }: TeamCellProps) {
+  const logo = team.logo;
+  // Remember which URL failed, so a changed logo is tried again.
+  const [failedLogo, setFailedLogo] = useState<string | null>(null);
+  const showLogo = logo && logo !== failedLogo;
+
   return (
     <span className={styles.team}>
-      {team.logo ? (
-        <img className={styles.logo} src={team.logo} alt="" loading="lazy" />
+      {showLogo ? (
+        <img
+          className={styles.logo}
+          src={logo}
+          alt=""
+          loading="lazy"
+          onError={() => setFailedLogo(logo)}
+        />
       ) : (
         <span
           className={`${styles.logo} ${styles.fallback} ${ours ? styles.ours : ''}`}
