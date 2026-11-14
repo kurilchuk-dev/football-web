@@ -1,0 +1,7 @@
+.title {
+  margin: 0 0 16px;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 7vw, 40px);
+  font-weight: 800;
+  line-height: 1.1;
+}
