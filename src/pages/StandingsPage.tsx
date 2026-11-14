@@ -1,4 +1,4 @@
-import { useStandings } from '../api/standings';
+import { useStandings } from '@/features/standings/api';
 import styles from './StandingsPage.module.css';
 
 const FORM_LABELS = { W: 'Перемога', D: 'Нічия', L: 'Поразка' } as const;

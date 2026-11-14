@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import { Layout } from './components/Layout';
+import { Layout } from '@/components/Layout/Layout';
 import { StandingsPage } from './pages/StandingsPage';
 
 export default function App() {
