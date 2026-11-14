@@ -201,6 +201,11 @@ export interface components {
       away_score?: number | null;
       /** Format: date-time */
       played_at: string;
+      /**
+       * Format: int64
+       * @description Round (matchday) number, e.g. 5 for round 5.
+       */
+      round?: number | null;
     };
     Player: {
       readonly id: number;
