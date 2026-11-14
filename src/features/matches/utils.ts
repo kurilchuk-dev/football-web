@@ -70,3 +70,24 @@ export function groupMatchesByDay(matches: Match[], timeZone?: string): MatchDay
   }
   return days;
 }
+
+export type MatchResult = 'W' | 'D' | 'L';
+
+/** Which side won a played match; null for a draw or an unplayed match. */
+export function getWinner(match: Pick<Match, 'home_score' | 'away_score'>): 'home' | 'away' | null {
+  if (!isPlayed(match)) return null;
+  const home = match.home_score as number;
+  const away = match.away_score as number;
+  if (home === away) return null;
+  return home > away ? 'home' : 'away';
+}
+
+/** Result of a played match from the point of view of our team (null if we did not play). */
+export function getOurResult(match: Match): MatchResult | null {
+  if (!isPlayed(match)) return null;
+  const side = match.home_team.is_our_team ? 'home' : match.away_team.is_our_team ? 'away' : null;
+  if (!side) return null;
+  const winner = getWinner(match);
+  if (winner === null) return 'D';
+  return winner === side ? 'W' : 'L';
+}

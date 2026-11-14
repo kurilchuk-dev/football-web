@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Match } from '@/api/types';
-import { formatMatchTime, groupMatchesByDay, isPlayed } from './utils';
+import { formatMatchTime, getOurResult, getWinner, groupMatchesByDay, isPlayed } from './utils';
 
 describe('isPlayed', () => {
   it('is true when both scores are set, including 0:0', () => {
@@ -47,5 +47,34 @@ describe('groupMatchesByDay', () => {
 
   it('returns an empty list for no matches', () => {
     expect(groupMatchesByDay([], 'UTC')).toEqual([]);
+  });
+});
+
+describe('getWinner / getOurResult', () => {
+  const game = (homeScore: number | null, awayScore: number | null, ourSide: 'home' | 'away') =>
+    ({
+      home_score: homeScore,
+      away_score: awayScore,
+      home_team: { is_our_team: ourSide === 'home' },
+      away_team: { is_our_team: ourSide === 'away' },
+    }) as Match;
+
+  it('finds the winning side', () => {
+    expect(getWinner(game(2, 1, 'home'))).toBe('home');
+    expect(getWinner(game(0, 3, 'home'))).toBe('away');
+    expect(getWinner(game(1, 1, 'home'))).toBeNull();
+    expect(getWinner(game(null, null, 'home'))).toBeNull();
+  });
+
+  it('gives the result from the point of view of our team', () => {
+    expect(getOurResult(game(2, 1, 'home'))).toBe('W');
+    expect(getOurResult(game(2, 1, 'away'))).toBe('L');
+    expect(getOurResult(game(1, 1, 'away'))).toBe('D');
+    expect(getOurResult(game(null, null, 'home'))).toBeNull();
+  });
+
+  it('is null when our team did not play', () => {
+    const other = { ...game(2, 1, 'home'), home_team: { is_our_team: false } } as Match;
+    expect(getOurResult(other)).toBeNull();
   });
 });
