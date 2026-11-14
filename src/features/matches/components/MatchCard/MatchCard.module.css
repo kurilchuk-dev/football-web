@@ -1,109 +1,253 @@
-/* Phones: logo above the name, three columns: home | score | away. */
-.card {
-  position: relative;
+/* Experiment 2: dense livescore rows inside one panel per day.
+   Phones: time | two teams stacked | two scores stacked.
+   Desktop: time | home | score pill | away. Our matches are lime rows. */
+.row {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 52px minmax(0, 1fr) 28px;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  row-gap: 8px;
   align-items: center;
-  gap: 8px;
-  padding: 16px 12px;
-  overflow: hidden;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
+  padding: 12px 14px;
 }
-/* Accent bar for matches of our team. */
-.ours::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
+.row + .row {
+  border-top: 1px solid var(--border);
+}
+.ours {
   background: var(--accent);
-  box-shadow: 0 0 16px var(--accent);
+  color: var(--on-accent);
+}
+.ours + .row,
+.row + .ours {
+  border-top-color: transparent;
+}
+
+/* Time (+ our result chip) in the left column. */
+.when {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-right: 12px;
+  border-right: 1px solid var(--border);
+  align-self: stretch;
+  justify-content: center;
+}
+.ours .when {
+  border-right-color: color-mix(in srgb, var(--on-accent) 25%, transparent);
+}
+.time {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ours .time {
+  color: var(--on-accent);
+}
+.time.upcoming {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 800;
+}
+.ours .time.upcoming {
+  color: var(--on-accent);
+}
+
+.chip {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #0b0f0d;
+  font-size: 10px;
+  font-weight: 800;
+}
+.W {
+  background: #3ddc84;
+}
+.D {
+  background: #9aa59e;
+}
+.L {
+  background: #ff6b6b;
+}
+/* Dark chips with colored letters on the lime row, same as the form dots. */
+.ours .chip {
+  background: var(--on-accent);
+}
+.ours .W {
+  color: #3ddc84;
+}
+.ours .D {
+  color: #9aa59e;
+}
+.ours .L {
+  color: #ff6b6b;
 }
 
 .team {
-  --logo-size: 48px;
+  --logo-size: 24px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
-  text-align: center;
+}
+.home {
+  grid-column: 2;
+  grid-row: 1;
+}
+.away {
+  grid-column: 2;
+  grid-row: 2;
 }
 .name {
-  max-width: 100%;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+}
+.winner .name {
+  font-weight: 800;
+}
+.loser {
+  opacity: 0.6;
+}
+.ours .loser {
+  opacity: 0.75;
 }
 
-.center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  min-width: 76px;
-}
-.score,
-.time {
-  font-family: var(--font-display);
-  font-weight: 800;
-  line-height: 1.1;
-  white-space: nowrap;
+/* On phones the wrapper disappears so both scores sit in the team rows. */
+.scores {
+  display: contents;
 }
 .score {
-  font-size: 26px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  text-align: right;
 }
-.time {
-  font-size: 22px;
-  color: var(--accent);
+.homeScore {
+  grid-column: 3;
+  grid-row: 1;
 }
-.date {
+.awayScore {
+  grid-column: 3;
+  grid-row: 2;
+}
+.colon {
+  display: none;
+}
+.pending::before {
+  display: none;
+}
+.pending .score {
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  white-space: nowrap;
+}
+.ours .pending .score {
+  color: var(--on-accent);
 }
 
-/* Desktop: "name logo   score   logo name" in one line. */
 @media (min-width: 768px) {
-  .card {
-    gap: 16px;
-    padding: 20px 32px;
+  .row {
+    grid-template-columns: 110px minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: auto;
+    column-gap: 20px;
+    padding: 16px 24px;
   }
-  .ours::before {
-    width: 6px;
+
+  .when {
+    grid-row: 1;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    padding-right: 16px;
+  }
+  .time {
+    font-size: 14px;
+  }
+  .time.upcoming {
+    font-size: 16px;
+  }
+  .chip {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
   }
 
   .team {
-    --logo-size: 56px;
-    flex-direction: row;
-    gap: 16px;
+    --logo-size: 36px;
+    gap: 14px;
   }
   .home {
+    grid-column: 2;
     flex-direction: row-reverse;
     text-align: right;
   }
   .away {
-    text-align: left;
+    grid-column: 4;
+    grid-row: 1;
   }
   .name {
     font-size: 16px;
   }
 
-  .center {
-    min-width: 120px;
+  .scores {
+    grid-column: 3;
+    grid-row: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 104px;
+    padding: 6px 18px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .ours .scores {
+    background: var(--on-accent);
+    border-color: var(--on-accent);
+    color: var(--accent);
   }
   .score {
-    font-size: 36px;
+    font-size: 24px;
+    text-align: center;
   }
-  .time {
-    font-size: 28px;
+  .homeScore,
+  .awayScore {
+    grid-column: auto;
+    grid-row: auto;
   }
-  .date {
-    font-size: 12px;
+  .colon {
+    display: inline;
+    color: var(--muted);
+    font-weight: 800;
+  }
+  .ours .colon {
+    color: var(--accent);
+  }
+
+  /* Unplayed: a tiny "VS" instead of "– : –". */
+  .pending::before {
+    content: 'VS';
+    display: block;
+    padding: 4px 0;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+  }
+  .ours .pending::before {
+    color: var(--accent);
+  }
+  .pending .score,
+  .pending .colon {
+    display: none;
   }
 }
