@@ -35,7 +35,13 @@ export function StandingsPage() {
           <tbody>
             {data.map((row) => (
               <tr key={row.team.id} className={row.team.is_our_team ? styles.ours : undefined}>
-                <td>{row.position}</td>
+                <td>
+                  <span
+                    className={`${styles.place} ${row.position <= 3 ? styles[`place${row.position}`] : ''}`}
+                  >
+                    {row.position}
+                  </span>
+                </td>
                 <td>{row.team.name}</td>
                 <td>{row.played}</td>
                 <td className={styles.full}>{row.won}</td>
