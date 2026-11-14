@@ -184,6 +184,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /**
+     * @description * `W` - W
+     *     * `D` - D
+     *     * `L` - L
+     * @enum {string}
+     */
+    FormEnum: 'W' | 'D' | 'L';
     Match: {
       readonly id: number;
       readonly home_team: components['schemas']['Team'];
@@ -237,17 +244,23 @@ export interface components {
       goals_against: number;
       goal_difference: number;
       points: number;
+      /** @description Results of the last 5 matches, oldest first (W/D/L). */
+      form: components['schemas']['FormEnum'][];
     };
     StandingTeam: {
       id: number;
       name: string;
       is_our_team: boolean;
+      /** Format: uri */
+      readonly logo: string | null;
     };
     Team: {
       readonly id: number;
       name: string;
       city?: string;
       is_our_team?: boolean;
+      /** Format: uri */
+      logo?: string | null;
     };
   };
   responses: never;

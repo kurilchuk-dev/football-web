@@ -1,0 +1,96 @@
+/* Mobile first: logo on top, menu as a single row of 4 equal tabs below. */
+.header {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 20px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.badge {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.link {
+  padding: 10px 4px;
+  text-align: center;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.link:hover {
+  color: var(--accent);
+}
+.active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.active:hover {
+  color: var(--on-accent);
+}
+
+/* Desktop: logo left, menu right in one line. */
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 32px;
+    min-height: 80px;
+    gap: 32px;
+  }
+
+  .nav {
+    display: flex;
+    gap: 28px;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+
+  .link {
+    padding: 12px 0;
+    border-radius: 0;
+  }
+
+  .active,
+  .active:hover {
+    background: none;
+    color: var(--accent);
+  }
+}
