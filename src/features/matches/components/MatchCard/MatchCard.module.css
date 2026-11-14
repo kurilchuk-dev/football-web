@@ -1,6 +1,6 @@
-/* Experiment 2: dense livescore rows inside one panel per day.
+/* Dense livescore rows inside one panel per group.
    Phones: time | two teams stacked | two scores stacked.
-   Desktop: time | home | score pill | away. Our matches are lime rows. */
+   Desktop: time | home | score pill | away. Our matches get a soft lime tint. */
 .row {
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr) 28px;
@@ -13,80 +13,52 @@
 .row + .row {
   border-top: 1px solid var(--border);
 }
+/* Our team: a soft tint and a thin accent bar instead of a solid lime row. */
 .ours {
-  background: var(--accent);
-  color: var(--on-accent);
-}
-.ours + .row,
-.row + .ours {
-  border-top-color: transparent;
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
-/* Time (+ our result chip) in the left column. */
+/* Inside a multi-day round every row also shows its date, so the left column is wider. */
+.withDate {
+  grid-template-columns: 68px minmax(0, 1fr) 28px;
+}
+
+/* Date (optional) + time, centered in the left column. */
 .when {
   grid-column: 1;
   grid-row: 1 / span 2;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  align-self: stretch;
   padding-right: 12px;
   border-right: 1px solid var(--border);
-  align-self: stretch;
-  justify-content: center;
 }
-.ours .when {
-  border-right-color: color-mix(in srgb, var(--on-accent) 25%, transparent);
+.whenText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.day {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .time {
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
-}
-.ours .time {
-  color: var(--on-accent);
+  font-variant-numeric: tabular-nums;
 }
 .time.upcoming {
   color: var(--accent);
   font-size: 14px;
   font-weight: 800;
-}
-.ours .time.upcoming {
-  color: var(--on-accent);
-}
-
-.chip {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  color: #0b0f0d;
-  font-size: 10px;
-  font-weight: 800;
-}
-.W {
-  background: #3ddc84;
-}
-.D {
-  background: #9aa59e;
-}
-.L {
-  background: #ff6b6b;
-}
-/* Dark chips with colored letters on the lime row, same as the form dots. */
-.ours .chip {
-  background: var(--on-accent);
-}
-.ours .W {
-  color: #3ddc84;
-}
-.ours .D {
-  color: #9aa59e;
-}
-.ours .L {
-  color: #ff6b6b;
 }
 
 .team {
@@ -118,9 +90,6 @@
 .loser {
   opacity: 0.6;
 }
-.ours .loser {
-  opacity: 0.75;
-}
 
 /* On phones the wrapper disappears so both scores sit in the team rows. */
 .scores {
@@ -130,7 +99,8 @@
   font-family: var(--font-display);
   font-size: 15px;
   font-weight: 800;
-  text-align: right;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 .homeScore {
   grid-column: 3;
@@ -149,9 +119,6 @@
 .pending .score {
   color: var(--muted);
 }
-.ours .pending .score {
-  color: var(--on-accent);
-}
 
 @media (min-width: 768px) {
   .row {
@@ -161,23 +128,22 @@
     padding: 16px 24px;
   }
 
+  .withDate {
+    grid-template-columns: 130px minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
   .when {
     grid-row: 1;
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 10px;
     padding-right: 16px;
+  }
+  .day {
+    font-size: 12px;
   }
   .time {
     font-size: 14px;
   }
   .time.upcoming {
     font-size: 16px;
-  }
-  .chip {
-    width: 24px;
-    height: 24px;
-    font-size: 11px;
   }
 
   .team {
@@ -211,9 +177,7 @@
     border-radius: 14px;
   }
   .ours .scores {
-    background: var(--on-accent);
-    border-color: var(--on-accent);
-    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
   }
   .score {
     font-size: 24px;
@@ -229,9 +193,6 @@
     color: var(--muted);
     font-weight: 800;
   }
-  .ours .colon {
-    color: var(--accent);
-  }
 
   /* Unplayed: a tiny "VS" instead of "– : –". */
   .pending::before {
@@ -242,9 +203,6 @@
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.2em;
-  }
-  .ours .pending::before {
-    color: var(--accent);
   }
   .pending .score,
   .pending .colon {

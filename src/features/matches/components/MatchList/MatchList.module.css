@@ -4,31 +4,38 @@
   gap: 20px;
 }
 
-.dayHeading {
+.heading {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
   margin: 0 0 10px;
   color: var(--text);
   font-size: 14px;
   font-weight: 700;
 }
-/* Only the first letter (weekday) is capitalized: "Неділя, 15 листопада". */
-.dayLabel {
+/* Only the first letter is capitalized: "Неділя, 15 листопада". */
+.label {
   display: inline-block;
 }
-.dayLabel::first-letter {
+.label::first-letter {
   text-transform: uppercase;
 }
-/* Thin line that fills the rest of the row after the date. */
-.dayHeading::after {
+/* Dates of a round, e.g. "14–16 листопада". */
+.subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+/* Thin line that fills the rest of the row after the heading. */
+.heading::after {
   content: '';
   flex: 1;
+  align-self: center;
   height: 1px;
   background: var(--border);
 }
 
-/* One panel per day, the matches are rows inside it. */
+/* One panel per group, the matches are rows inside it. */
 .list {
   overflow: hidden;
   background: var(--surface);

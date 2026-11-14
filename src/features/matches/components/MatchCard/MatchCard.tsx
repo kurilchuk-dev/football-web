@@ -1,26 +1,19 @@
 import type { Match } from '@/api/types';
 import { TeamLogo } from '@/components/TeamLogo/TeamLogo';
-import { formatMatchTime, getOurResult, getWinner, isPlayed } from '../../utils';
-import type { MatchResult } from '../../utils';
+import { formatMatchDate, formatMatchTime, getWinner, isPlayed } from '../../utils';
 import styles from './MatchCard.module.css';
-
-const RESULT_LETTERS: Record<MatchResult, string> = { W: 'В', D: 'Н', L: 'П' };
-const RESULT_LABELS: Record<MatchResult, string> = {
-  W: 'Перемога',
-  D: 'Нічия',
-  L: 'Поразка',
-};
 
 interface MatchCardProps {
   match: Match;
+  /** Show the date next to the time (used inside rounds that span several days). */
+  showDate?: boolean;
 }
 
 /** One match as a dense scoreboard row (livescore style). */
-export function MatchCard({ match }: MatchCardProps) {
+export function MatchCard({ match, showDate = false }: MatchCardProps) {
   const { home_team: home, away_team: away } = match;
   const ours = home.is_our_team || away.is_our_team;
   const played = isPlayed(match);
-  const result = getOurResult(match);
   const winner = getWinner(match);
 
   // Once the match is over the loser fades, the winner stays bright.
@@ -28,29 +21,24 @@ export function MatchCard({ match }: MatchCardProps) {
     winner === null ? '' : winner === side ? styles.winner : styles.loser;
 
   return (
-    <article className={`${styles.row} ${ours ? styles.ours : ''}`}>
+    <article
+      className={`${styles.row} ${ours ? styles.ours : ''} ${showDate ? styles.withDate : ''}`}
+    >
       <div className={styles.when}>
-        <span className={played ? styles.time : `${styles.time} ${styles.upcoming}`}>
-          {formatMatchTime(match.played_at)}
-        </span>
-        {result && (
-          <span
-            className={`${styles.chip} ${styles[result]}`}
-            title={RESULT_LABELS[result]}
-            role="img"
-            aria-label={RESULT_LABELS[result]}
-          >
-            {RESULT_LETTERS[result]}
+        <div className={styles.whenText}>
+          {showDate && <span className={styles.day}>{formatMatchDate(match.played_at)}</span>}
+          <span className={played ? styles.time : `${styles.time} ${styles.upcoming}`}>
+            {formatMatchTime(match.played_at)}
           </span>
-        )}
+        </div>
       </div>
 
       <div className={`${styles.team} ${styles.home} ${sideClass('home')}`}>
-        <TeamLogo name={home.name} logo={home.logo} ours={ours} />
+        <TeamLogo name={home.name} logo={home.logo} />
         <span className={styles.name}>{home.name}</span>
       </div>
       <div className={`${styles.team} ${styles.away} ${sideClass('away')}`}>
-        <TeamLogo name={away.name} logo={away.logo} ours={ours} />
+        <TeamLogo name={away.name} logo={away.logo} />
         <span className={styles.name}>{away.name}</span>
       </div>
 
