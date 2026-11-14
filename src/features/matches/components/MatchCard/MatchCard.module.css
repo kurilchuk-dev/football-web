@@ -1,0 +1,109 @@
+/* Phones: logo above the name, three columns: home | score | away. */
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+/* Accent bar for matches of our team. */
+.ours::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--accent);
+  box-shadow: 0 0 16px var(--accent);
+}
+
+.team {
+  --logo-size: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  text-align: center;
+}
+.name {
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 76px;
+}
+.score,
+.time {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.score {
+  font-size: 26px;
+}
+.time {
+  font-size: 22px;
+  color: var(--accent);
+}
+.date {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Desktop: "name logo   score   logo name" in one line. */
+@media (min-width: 768px) {
+  .card {
+    gap: 16px;
+    padding: 20px 32px;
+  }
+  .ours::before {
+    width: 6px;
+  }
+
+  .team {
+    --logo-size: 56px;
+    flex-direction: row;
+    gap: 16px;
+  }
+  .home {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+  .away {
+    text-align: left;
+  }
+  .name {
+    font-size: 16px;
+  }
+
+  .center {
+    min-width: 120px;
+  }
+  .score {
+    font-size: 36px;
+  }
+  .time {
+    font-size: 28px;
+  }
+  .date {
+    font-size: 12px;
+  }
+}
