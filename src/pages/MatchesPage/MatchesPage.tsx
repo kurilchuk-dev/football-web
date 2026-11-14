@@ -1,10 +1,20 @@
+import { useSearchParams } from 'react-router-dom';
 import { useResults, useUpcoming } from '@/features/matches/api';
+import { MatchList } from '@/features/matches/components/MatchList/MatchList';
+import { MatchTabs } from '@/features/matches/components/MatchTabs/MatchTabs';
+import styles from './MatchesPage.module.css';
 
-// Stage 1 skeleton: proves the data flows. The real UI (cards, tabs, filter)
-// is added in the next stages.
+type TabId = 'results' | 'calendar';
+
 export function MatchesPage() {
   const results = useResults();
   const upcoming = useUpcoming();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // The active tab lives in the URL (?tab=calendar) so it can be shared.
+  const tab: TabId = searchParams.get('tab') === 'calendar' ? 'calendar' : 'results';
+  const selectTab = (id: TabId) =>
+    setSearchParams(id === 'results' ? {} : { tab: id }, { replace: true });
 
   if (results.isLoading || upcoming.isLoading) return <p>Завантаження...</p>;
   if (results.isError || upcoming.isError || !results.data || !upcoming.data) {
@@ -13,23 +23,20 @@ export function MatchesPage() {
 
   return (
     <>
-      <h1>Матчі</h1>
-      <h2>Результати ({results.data.length})</h2>
-      <ul>
-        {results.data.map((match) => (
-          <li key={match.id}>
-            {match.home_team.name} {match.home_score}:{match.away_score} {match.away_team.name}
-          </li>
-        ))}
-      </ul>
-      <h2>Календар ({upcoming.data.length})</h2>
-      <ul>
-        {upcoming.data.map((match) => (
-          <li key={match.id}>
-            {match.home_team.name} — {match.away_team.name} ({match.played_at})
-          </li>
-        ))}
-      </ul>
+      <h1 className={styles.title}>Матчі</h1>
+      <MatchTabs
+        active={tab}
+        onChange={selectTab}
+        tabs={[
+          { id: 'results', label: 'Результати', count: results.data.length },
+          { id: 'calendar', label: 'Календар', count: upcoming.data.length },
+        ]}
+      />
+      {tab === 'results' ? (
+        <MatchList matches={results.data} emptyText="Зіграних матчів поки немає" />
+      ) : (
+        <MatchList matches={upcoming.data} emptyText="Найближчих матчів поки немає" />
+      )}
     </>
   );
 }
