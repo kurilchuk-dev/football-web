@@ -1,17 +1,19 @@
 import type { Player } from '@/api/types';
-import { POSITION_SHORT } from '../../constants';
+import { getInitials } from '../../utils';
 import styles from './PlayerCard.module.css';
 
 interface PlayerCardProps {
   player: Player;
 }
 
+/** Shirt number, or the player's initials while the number is not assigned. */
 export function PlayerCard({ player }: PlayerCardProps) {
+  const hasNumber = player.number !== null && player.number !== undefined;
+
   return (
     <article className={styles.card}>
-      <span className={styles.number}>{player.number}</span>
-      <span className={styles.position} title={player.position_display}>
-        {POSITION_SHORT[player.position]}
+      <span className={hasNumber ? styles.number : `${styles.number} ${styles.initials}`}>
+        {hasNumber ? player.number : getInitials(player)}
       </span>
       <div className={styles.names}>
         <span className={styles.firstName}>{player.first_name}</span>
