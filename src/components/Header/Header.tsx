@@ -27,7 +27,7 @@ export function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <NavLink to="/" className={styles.brand} aria-label={name}>
+        <NavLink to="/" className={styles.brand}>
           {showLogo ? (
             <img
               className={styles.logoImage}
@@ -38,6 +38,9 @@ export function Header() {
           ) : (
             <span className={styles.badge}>{initials}</span>
           )}
+          <span className={styles.brandText}>
+            <span className={styles.name}>{name}</span>
+          </span>
         </NavLink>
 
         {/* Top pill menu on desktop, fixed bottom tab bar on phones. */}

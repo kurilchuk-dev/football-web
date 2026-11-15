@@ -55,6 +55,32 @@
   font-size: 14px;
 }
 
+.brandText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.15;
+}
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+}
+.tagline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* Bottom tab bar (phones). */
 .nav {
   position: fixed;
@@ -115,6 +141,12 @@
   .badge {
     width: 48px;
     height: 48px;
+  }
+  .name {
+    font-size: 18px;
+  }
+  .tagline {
+    font-size: 11px;
   }
 
   .nav {
