@@ -211,19 +211,17 @@ export interface components {
       readonly id: number;
       first_name: string;
       last_name: string;
-      /** Format: int64 */
-      number: number;
-      position: components['schemas']['PositionEnum'];
-      readonly position_display: string;
+      /**
+       * Format: int64
+       * @description Shirt number; leave empty if not assigned yet.
+       */
+      number?: number | null;
+      /**
+       * Format: uri
+       * @description Portrait shown on the team page.
+       */
+      photo?: string | null;
     };
-    /**
-     * @description * `GK` - Goalkeeper
-     *     * `DF` - Defender
-     *     * `MF` - Midfielder
-     *     * `FW` - Forward
-     * @enum {string}
-     */
-    PositionEnum: 'GK' | 'DF' | 'MF' | 'FW';
     /**
      * @description * `head_coach` - Head coach
      *     * `assistant` - Assistant coach
