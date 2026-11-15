@@ -3,7 +3,7 @@ import type { Team } from '@/api/types';
 import { Skeleton } from '@/components/Skeleton/Skeleton';
 import { TeamLogo } from '@/components/TeamLogo/TeamLogo';
 import { useUpcoming } from '@/features/matches/api';
-import { formatDayHeading, formatMatchTime, hasDate } from '@/features/matches/utils';
+import { formatDayHeading, formatMatchTime, hasDate, hasTime } from '@/features/matches/utils';
 import { getNextMatch } from '../../utils';
 import { Countdown } from '../Countdown/Countdown';
 import styles from './NextMatchCard.module.css';
@@ -61,11 +61,15 @@ export function NextMatchCard() {
       {hasDate(match) ? (
         <>
           <p className={styles.when}>
-            <span className={styles.day}>{formatDayHeading(match.played_at)}</span>
-            <span className={styles.time}>{formatMatchTime(match.played_at)}</span>
+            <span className={styles.day}>{formatDayHeading(match.date)}</span>
+            {hasTime(match) && <span className={styles.time}>{formatMatchTime(match.time)}</span>}
           </p>
 
-          <Countdown target={match.played_at} />
+          {hasTime(match) && match.played_at ? (
+            <Countdown target={match.played_at} />
+          ) : (
+            <p className={styles.tbd}>Час ще не визначений</p>
+          )}
         </>
       ) : (
         <p className={styles.when}>

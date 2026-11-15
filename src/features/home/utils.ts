@@ -1,34 +1,25 @@
 import type { Match, StandingRow, Team } from '@/api/types';
-import { isPlayed } from '@/features/matches/utils';
+import { isPlayed, kickoffKey } from '@/features/matches/utils';
 
 type FormResult = StandingRow['form'][number];
-
-/** Kick-off as a number; a match without a date counts as "last" (Infinity) or "oldest" (-Infinity). */
-const time = (match: Pick<Match, 'played_at'>, missing = Infinity) =>
-  match.played_at ? new Date(match.played_at).getTime() : missing;
 
 export function isOurMatch(match: Match): boolean {
   return Boolean(match.home_team.is_our_team || match.away_team.is_our_team);
 }
 
-/** The soonest not-yet-played match of our team. */
+/** The soonest not-yet-played match of our team (matches without a date come last). */
 export function getNextMatch(upcoming: Match[]): Match | undefined {
   return upcoming
     .filter((match) => isOurMatch(match) && !isPlayed(match))
-    .sort((a, b) => {
-      const [ta, tb] = [time(a), time(b)];
-      return ta === tb ? 0 : ta < tb ? -1 : 1;
-    })[0];
+    .sort((a, b) => kickoffKey(a).localeCompare(kickoffKey(b)))[0];
 }
 
-/** Our latest played matches, newest first. */
+/** Our latest played matches, newest first (a played match without a date counts as the oldest). */
 export function getRecentResults(results: Match[], count = 3): Match[] {
+  const key = (match: Match) => (match.date ? kickoffKey(match) : '');
   return results
     .filter((match) => isOurMatch(match) && isPlayed(match))
-    .sort((a, b) => {
-      const [ta, tb] = [time(a, -Infinity), time(b, -Infinity)];
-      return ta === tb ? 0 : ta > tb ? -1 : 1;
-    })
+    .sort((a, b) => key(b).localeCompare(key(a)))
     .slice(0, count);
 }
 

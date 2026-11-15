@@ -47,7 +47,7 @@ export function FormCard() {
 
       {last && (
         <p className={styles.caption}>
-          Останній матч{last.played_at ? ` · ${formatMatchDate(last.played_at)}` : ''}
+          Останній матч{last.date ? ` · ${formatMatchDate(last.date)}` : ''}
         </p>
       )}
 
