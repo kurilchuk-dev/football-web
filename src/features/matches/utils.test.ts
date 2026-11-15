@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Match } from '@/api/types';
-import { formatMatchTime, getWinner, groupMatches, isPlayed } from './utils';
+import { DATE_TBD, formatMatchTime, getWinner, groupMatches, hasDate, isPlayed } from './utils';
 
 describe('isPlayed', () => {
   it('is true when both scores are set, including 0:0', () => {
@@ -21,9 +21,40 @@ describe('formatMatchTime', () => {
   });
 });
 
+describe('hasDate', () => {
+  it('is false for a missing date and true for a real one', () => {
+    expect(hasDate({ played_at: null })).toBe(false);
+    expect(hasDate({ played_at: undefined })).toBe(false);
+    expect(hasDate({ played_at: '2026-11-14T18:05:00Z' })).toBe(true);
+  });
+});
+
 describe('groupMatches', () => {
-  const match = (id: number, playedAt: string, round: number | null = null) =>
+  const match = (id: number, playedAt: string | null, round: number | null = null) =>
     ({ id, played_at: playedAt, round }) as Match;
+
+  it('puts matches without a date (and round) into one "date TBD" group', () => {
+    const groups = groupMatches([match(1, null), match(2, null)], 'UTC');
+    expect(groups).toHaveLength(1);
+    expect(groups[0].label).toBe(DATE_TBD);
+    expect(groups[0].matches.map((m) => m.id)).toEqual([1, 2]);
+  });
+
+  it('keeps an undated match in its round, after the dated ones, and shows row dates', () => {
+    const [group] = groupMatches(
+      [match(1, null, 5), match(2, '2026-11-16T15:00:00Z', 5), match(3, '2026-11-16T12:00:00Z', 5)],
+      'UTC',
+    );
+    expect(group.matches.map((m) => m.id)).toEqual([3, 2, 1]);
+    expect(group.subtitle).toBeDefined();
+    expect(group.showDate).toBe(true);
+  });
+
+  it('has no date subtitle when the whole round has no dates yet', () => {
+    const [group] = groupMatches([match(1, null, 7), match(2, null, 7)], 'UTC');
+    expect(group.subtitle).toBeUndefined();
+    expect(group.showDate).toBe(false);
+  });
 
   it('without rounds groups matches by calendar day and keeps the input order', () => {
     const groups = groupMatches(

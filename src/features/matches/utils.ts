@@ -2,6 +2,16 @@ import type { Match } from '@/api/types';
 
 const LOCALE = 'uk-UA';
 
+/** Shown instead of a date/time while the admin has not set it yet. */
+export const DATE_TBD = 'Дата уточнюється';
+
+/** True if the match already has a date and time. */
+export function hasDate<T extends Pick<Match, 'played_at'>>(
+  match: T,
+): match is T & { played_at: string } {
+  return Boolean(match.played_at);
+}
+
 /** "сб, 14.11" */
 export function formatMatchDate(iso: string, timeZone?: string): string {
   return new Intl.DateTimeFormat(LOCALE, {
@@ -74,19 +84,29 @@ export function groupMatches(matches: Match[], timeZone?: string): MatchGroup[] 
     day: '2-digit',
     timeZone,
   });
+  const dayOf = (iso: string) => dayKeyFormat.format(new Date(iso));
 
   const groups = new Map<string, MatchGroup>();
   for (const match of matches) {
     const hasRound = match.round !== null && match.round !== undefined;
+    const dated = hasDate(match);
     const key = hasRound
       ? `round:${match.round}`
-      : `day:${dayKeyFormat.format(new Date(match.played_at))}`;
+      : dated
+        ? `day:${dayOf(match.played_at)}`
+        : 'day:tbd';
 
     let group = groups.get(key);
     if (!group) {
-      group = hasRound
-        ? { key, label: `Тур ${match.round}`, showDate: false, matches: [] }
-        : { key, label: formatDayHeading(match.played_at, timeZone), showDate: false, matches: [] };
+      if (hasRound) group = { key, label: `Тур ${match.round}`, showDate: false, matches: [] };
+      else if (dated)
+        group = {
+          key,
+          label: formatDayHeading(match.played_at, timeZone),
+          showDate: false,
+          matches: [],
+        };
+      else group = { key, label: DATE_TBD, showDate: false, matches: [] };
       groups.set(key, group);
     }
     group.matches.push(match);
@@ -94,12 +114,25 @@ export function groupMatches(matches: Match[], timeZone?: string): MatchGroup[] 
 
   for (const group of groups.values()) {
     if (!group.key.startsWith('round:')) continue;
-    group.matches.sort((a, b) => a.played_at.localeCompare(b.played_at));
-    const first = group.matches[0].played_at;
-    const last = group.matches[group.matches.length - 1].played_at;
-    group.subtitle = formatDateRange(first, last, timeZone);
+    // Dated matches in chronological order, the ones without a date after them.
+    group.matches.sort((a, b) => {
+      if (!hasDate(a)) return hasDate(b) ? 1 : 0;
+      if (!hasDate(b)) return -1;
+      return a.played_at.localeCompare(b.played_at);
+    });
+    const datedMatches = group.matches.filter(hasDate);
+    const hasUndated = datedMatches.length < group.matches.length;
+    if (datedMatches.length > 0) {
+      group.subtitle = formatDateRange(
+        datedMatches[0].played_at,
+        datedMatches[datedMatches.length - 1].played_at,
+        timeZone,
+      );
+    }
+    // Rows show their own date when the round spans several days or some matches have no date yet.
     group.showDate =
-      new Set(group.matches.map((m) => dayKeyFormat.format(new Date(m.played_at)))).size > 1;
+      new Set(datedMatches.map((m) => dayOf(m.played_at))).size > 1 ||
+      (hasUndated && datedMatches.length > 0);
   }
   return [...groups.values()];
 }
