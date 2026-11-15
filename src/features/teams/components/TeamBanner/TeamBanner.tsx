@@ -7,7 +7,7 @@ interface TeamBannerProps {
   playersCount: number;
 }
 
-/** Club header: big logo, name, city and the size of the squad. */
+/** Club header: logo, name, and chips with the city and the size of the squad. */
 export function TeamBanner({ team, playersCount }: TeamBannerProps) {
   return (
     <header className={styles.banner}>
@@ -17,12 +17,13 @@ export function TeamBanner({ team, playersCount }: TeamBannerProps) {
       <div className={styles.text}>
         <p className={styles.eyebrow}>Чемпіонат Черкаського району</p>
         <h1 className={styles.title}>{team.name}</h1>
-        {team.city && <p className={styles.city}>{team.city}</p>}
+        <ul className={styles.meta}>
+          {team.city && <li className={styles.chip}>{team.city}</li>}
+          <li className={`${styles.chip} ${styles.count}`}>
+            <strong>{playersCount}</strong> гравців
+          </li>
+        </ul>
       </div>
-      <dl className={styles.stat}>
-        <dd className={styles.value}>{playersCount}</dd>
-        <dt className={styles.label}>гравців</dt>
-      </dl>
     </header>
   );
 }
