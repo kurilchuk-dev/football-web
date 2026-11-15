@@ -1,6 +1,15 @@
 import type { Match } from '@/api/types';
 import { TeamLogo } from '@/components/TeamLogo/TeamLogo';
-import { formatMatchDate, formatMatchTime, getWinner, hasDate, isPlayed } from '../../utils';
+import {
+  DATE_TBD,
+  TIME_TBD,
+  formatMatchDate,
+  formatMatchTime,
+  getWinner,
+  hasDate,
+  hasTime,
+  isPlayed,
+} from '../../utils';
 import styles from './MatchCard.module.css';
 
 interface MatchCardProps {
@@ -20,25 +29,28 @@ export function MatchCard({ match, showDate = false }: MatchCardProps) {
   const sideClass = (side: 'home' | 'away') =>
     winner === null ? '' : winner === side ? styles.winner : styles.loser;
 
+  // "Дата / Час уточнюється" needs a wider left column than a plain time.
+  const unknown = !hasDate(match) || (!hasTime(match) && !showDate);
+
   return (
     <article
-      className={`${styles.row} ${ours ? styles.ours : ''} ${showDate ? styles.withDate : ''}`}
+      className={`${styles.row} ${ours ? styles.ours : ''} ${showDate ? styles.withDate : ''} ${unknown ? styles.withUnknown : ''}`}
     >
       <div className={styles.when}>
         <div className={styles.whenText}>
           {hasDate(match) ? (
             <>
-              {showDate && <span className={styles.day}>{formatMatchDate(match.played_at)}</span>}
-              <span className={played ? styles.time : `${styles.time} ${styles.upcoming}`}>
-                {formatMatchTime(match.played_at)}
-              </span>
+              {showDate && <span className={styles.day}>{formatMatchDate(match.date)}</span>}
+              {hasTime(match) ? (
+                <span className={played ? styles.time : `${styles.time} ${styles.upcoming}`}>
+                  {formatMatchTime(match.time)}
+                </span>
+              ) : (
+                <span className={styles.tbd}>{showDate ? 'час невідомий' : TIME_TBD}</span>
+              )}
             </>
           ) : (
-            <span className={styles.tbd}>
-              Дата
-              <br />
-              уточнюється
-            </span>
+            <span className={styles.tbd}>{DATE_TBD}</span>
           )}
         </div>
       </div>
