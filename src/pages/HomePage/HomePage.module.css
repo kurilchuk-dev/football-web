@@ -1,0 +1,26 @@
+.hero {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 32px;
+}
+
+/* The Reveal wrappers are the grid items: let their content fill the whole cell. */
+.cell {
+  display: flex;
+  flex-direction: column;
+}
+.cell > * {
+  flex: 1;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .hero {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+}

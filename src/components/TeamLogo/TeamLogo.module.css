@@ -1,0 +1,21 @@
+.logo {
+  flex: none;
+  width: var(--logo-size, 32px);
+  height: var(--logo-size, 32px);
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+  color: var(--text);
+  font-size: calc(var(--logo-size, 32px) * 0.44);
+  font-weight: 800;
+}
+.fallback.ours {
+  background: var(--on-accent);
+  color: var(--accent);
+}

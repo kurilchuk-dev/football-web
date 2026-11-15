@@ -1,0 +1,113 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+/* The portrait area: the same size with or without a photo, so the grid stays even. */
+.media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      90% 70% at 50% 0%,
+      color-mix(in srgb, var(--accent) 16%, transparent),
+      transparent 70%
+    ),
+    var(--bg);
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Shirt number over the photo. */
+.badge {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  min-width: 36px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* No photo: the number (or initials) fills the portrait area. */
+.number {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: clamp(48px, 14vw, 72px);
+  font-weight: 800;
+  line-height: 1;
+}
+.initials {
+  color: var(--muted);
+  font-size: clamp(40px, 12vw, 60px);
+}
+
+.names {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 10px 12px 12px;
+  border-top: 1px solid var(--border);
+}
+.firstName,
+.lastName {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.firstName {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.lastName {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+/* Tablets and up: taller portraits and slightly larger text. */
+@media (min-width: 640px) {
+  .media {
+    aspect-ratio: 4 / 5;
+  }
+  .firstName {
+    font-size: 13px;
+  }
+  .lastName {
+    font-size: 16px;
+  }
+}

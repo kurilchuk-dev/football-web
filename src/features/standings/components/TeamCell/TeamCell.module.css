@@ -1,0 +1,19 @@
+.team {
+  --logo-size: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .team {
+    --logo-size: 40px;
+  }
+}
