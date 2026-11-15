@@ -3,7 +3,7 @@ import type { Team } from '@/api/types';
 import { Skeleton } from '@/components/Skeleton/Skeleton';
 import { TeamLogo } from '@/components/TeamLogo/TeamLogo';
 import { useUpcoming } from '@/features/matches/api';
-import { formatDayHeading, formatMatchTime } from '@/features/matches/utils';
+import { formatDayHeading, formatMatchTime, hasDate } from '@/features/matches/utils';
 import { getNextMatch } from '../../utils';
 import { Countdown } from '../Countdown/Countdown';
 import styles from './NextMatchCard.module.css';
@@ -58,12 +58,20 @@ export function NextMatchCard() {
         <Side team={match.away_team} />
       </div>
 
-      <p className={styles.when}>
-        <span className={styles.day}>{formatDayHeading(match.played_at)}</span>
-        <span className={styles.time}>{formatMatchTime(match.played_at)}</span>
-      </p>
+      {hasDate(match) ? (
+        <>
+          <p className={styles.when}>
+            <span className={styles.day}>{formatDayHeading(match.played_at)}</span>
+            <span className={styles.time}>{formatMatchTime(match.played_at)}</span>
+          </p>
 
-      <Countdown target={match.played_at} />
+          <Countdown target={match.played_at} />
+        </>
+      ) : (
+        <p className={styles.when}>
+          <span className={styles.day}>Дата і час ще не визначені</span>
+        </p>
+      )}
 
       <Link to="/matches?tab=calendar" className={styles.link}>
         Весь календар →

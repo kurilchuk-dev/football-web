@@ -60,6 +60,14 @@
   font-size: 14px;
   font-weight: 800;
 }
+/* The date is not set yet. */
+.tbd {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+}
 
 .team {
   --logo-size: 24px;
