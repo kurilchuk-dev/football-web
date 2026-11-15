@@ -22,7 +22,7 @@ const match = (
   away: Team,
   homeScore: number | null,
   awayScore: number | null,
-  playedAt: string,
+  playedAt: string | null,
 ) =>
   ({
     id,
@@ -42,6 +42,13 @@ describe('getNextMatch', () => {
       match(3, B, OURS, null, null, '2026-11-22T10:00:00Z'),
     ];
     expect(getNextMatch(upcoming)?.id).toBe(3);
+  });
+
+  it('puts a match without a date after the dated ones, but still returns it when it is the only one', () => {
+    const undated = match(1, OURS, A, null, null, null);
+    const dated = match(2, OURS, B, null, null, '2026-11-28T10:00:00Z');
+    expect(getNextMatch([undated, dated])?.id).toBe(2);
+    expect(getNextMatch([undated])?.id).toBe(1);
   });
 
   it('is undefined when our team has nothing scheduled', () => {

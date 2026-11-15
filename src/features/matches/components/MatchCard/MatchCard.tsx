@@ -1,6 +1,6 @@
 import type { Match } from '@/api/types';
 import { TeamLogo } from '@/components/TeamLogo/TeamLogo';
-import { formatMatchDate, formatMatchTime, getWinner, isPlayed } from '../../utils';
+import { formatMatchDate, formatMatchTime, getWinner, hasDate, isPlayed } from '../../utils';
 import styles from './MatchCard.module.css';
 
 interface MatchCardProps {
@@ -26,10 +26,20 @@ export function MatchCard({ match, showDate = false }: MatchCardProps) {
     >
       <div className={styles.when}>
         <div className={styles.whenText}>
-          {showDate && <span className={styles.day}>{formatMatchDate(match.played_at)}</span>}
-          <span className={played ? styles.time : `${styles.time} ${styles.upcoming}`}>
-            {formatMatchTime(match.played_at)}
-          </span>
+          {hasDate(match) ? (
+            <>
+              {showDate && <span className={styles.day}>{formatMatchDate(match.played_at)}</span>}
+              <span className={played ? styles.time : `${styles.time} ${styles.upcoming}`}>
+                {formatMatchTime(match.played_at)}
+              </span>
+            </>
+          ) : (
+            <span className={styles.tbd}>
+              Дата
+              <br />
+              уточнюється
+            </span>
+          )}
         </div>
       </div>
 

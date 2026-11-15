@@ -3,7 +3,9 @@ import { isPlayed } from '@/features/matches/utils';
 
 type FormResult = StandingRow['form'][number];
 
-const time = (match: Pick<Match, 'played_at'>) => new Date(match.played_at).getTime();
+/** Kick-off as a number; a match without a date counts as "last" (Infinity) or "oldest" (-Infinity). */
+const time = (match: Pick<Match, 'played_at'>, missing = Infinity) =>
+  match.played_at ? new Date(match.played_at).getTime() : missing;
 
 export function isOurMatch(match: Match): boolean {
   return Boolean(match.home_team.is_our_team || match.away_team.is_our_team);
@@ -13,14 +15,20 @@ export function isOurMatch(match: Match): boolean {
 export function getNextMatch(upcoming: Match[]): Match | undefined {
   return upcoming
     .filter((match) => isOurMatch(match) && !isPlayed(match))
-    .sort((a, b) => time(a) - time(b))[0];
+    .sort((a, b) => {
+      const [ta, tb] = [time(a), time(b)];
+      return ta === tb ? 0 : ta < tb ? -1 : 1;
+    })[0];
 }
 
 /** Our latest played matches, newest first. */
 export function getRecentResults(results: Match[], count = 3): Match[] {
   return results
     .filter((match) => isOurMatch(match) && isPlayed(match))
-    .sort((a, b) => time(b) - time(a))
+    .sort((a, b) => {
+      const [ta, tb] = [time(a, -Infinity), time(b, -Infinity)];
+      return ta === tb ? 0 : ta > tb ? -1 : 1;
+    })
     .slice(0, count);
 }
 

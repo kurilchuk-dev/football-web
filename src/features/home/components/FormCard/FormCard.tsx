@@ -45,7 +45,11 @@ export function FormCard() {
         <p className={styles.message}>Зіграних матчів поки немає</p>
       )}
 
-      {last && <p className={styles.caption}>Останній матч · {formatMatchDate(last.played_at)}</p>}
+      {last && (
+        <p className={styles.caption}>
+          Останній матч{last.played_at ? ` · ${formatMatchDate(last.played_at)}` : ''}
+        </p>
+      )}
 
       <div className={styles.dots}>
         <FormDots form={form} />

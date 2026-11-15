@@ -37,7 +37,7 @@ export function storeAccent(value: StoredAccent | null) {
   }
 }
 
-/** Applies the last known club color before the first paint, so there is no lime flash. */
+/** Applies the last known club color before the first paint, so there is no color flash. */
 export function applyStoredAccent() {
   const stored = readStoredAccent();
   if (stored) applyAccent(stored);
