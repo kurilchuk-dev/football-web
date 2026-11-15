@@ -4,8 +4,10 @@
   --border: #223029;
   --text: #f2f5f0;
   --muted: #9aa59e;
-  --accent: #c6ff3d;
-  --on-accent: #0b0f0d;
+  /* The club's own color (taken from the logo), so the first visit does not flash another color
+     before the logo color is calculated. It is still overridden by the logo accent at runtime. */
+  --accent: #ef3e39;
+  --on-accent: #ffffff;
   --font-body: 'Manrope', system-ui, sans-serif;
   --font-display: 'Unbounded', sans-serif;
   --radius: 24px;
