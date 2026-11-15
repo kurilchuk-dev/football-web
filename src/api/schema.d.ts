@@ -366,7 +366,10 @@ export interface operations {
   };
   players_list: {
     parameters: {
-      query?: never;
+      query?: {
+        /** @description Show only players of the team with this id */
+        team?: number;
+      };
       header?: never;
       path?: never;
       cookie?: never;
