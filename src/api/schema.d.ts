@@ -216,6 +216,11 @@ export interface components {
        * @description Shirt number; leave empty if not assigned yet.
        */
       number?: number | null;
+      /**
+       * Format: uri
+       * @description Portrait shown on the team page.
+       */
+      photo?: string | null;
     };
     /**
      * @description * `head_coach` - Head coach
