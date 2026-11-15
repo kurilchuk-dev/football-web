@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type { Match } from '@/api/types';
-import { DATE_TBD, formatMatchTime, getWinner, groupMatches, hasDate, isPlayed } from './utils';
+import {
+  DATE_TBD,
+  formatMatchDate,
+  formatMatchTime,
+  getWinner,
+  groupMatches,
+  hasDate,
+  hasTime,
+  isPlayed,
+  kickoffKey,
+} from './utils';
 
 describe('isPlayed', () => {
   it('is true when both scores are set, including 0:0', () => {
@@ -15,56 +25,92 @@ describe('isPlayed', () => {
 });
 
 describe('formatMatchTime', () => {
-  it('formats the time as 24h HH:MM', () => {
-    expect(formatMatchTime('2026-11-14T18:05:00Z', 'UTC')).toBe('18:05');
-    expect(formatMatchTime('2026-11-14T00:30:00Z', 'UTC')).toBe('00:30');
+  it('shows the HH:MM the API sends', () => {
+    expect(formatMatchTime('18:05')).toBe('18:05');
+    expect(formatMatchTime('00:30:00')).toBe('00:30');
   });
 });
 
-describe('hasDate', () => {
-  it('is false for a missing date and true for a real one', () => {
-    expect(hasDate({ played_at: null })).toBe(false);
-    expect(hasDate({ played_at: undefined })).toBe(false);
-    expect(hasDate({ played_at: '2026-11-14T18:05:00Z' })).toBe(true);
+describe('formatMatchDate', () => {
+  it('formats a calendar day without shifting it by a time zone', () => {
+    expect(formatMatchDate('2026-11-21')).toContain('21');
+    expect(formatMatchDate('2026-11-21')).toContain('11');
+  });
+});
+
+describe('hasDate / hasTime', () => {
+  it('are independent: a match can have a date but no time', () => {
+    expect(hasDate({ date: null })).toBe(false);
+    expect(hasDate({ date: '2026-11-21' })).toBe(true);
+    expect(hasTime({ time: null })).toBe(false);
+    expect(hasTime({ time: '14:00' })).toBe(true);
+  });
+});
+
+describe('kickoffKey', () => {
+  it('orders by date, then time; missing values go last', () => {
+    const keys = [
+      kickoffKey({ date: null, time: null }),
+      kickoffKey({ date: '2026-11-21', time: null }),
+      kickoffKey({ date: '2026-11-21', time: '10:00' }),
+      kickoffKey({ date: '2026-11-20', time: '18:00' }),
+    ].sort();
+    expect(keys).toEqual([
+      '2026-11-20 18:00',
+      '2026-11-21 10:00',
+      '2026-11-21 99:99',
+      '9999-99-99 99:99',
+    ]);
   });
 });
 
 describe('groupMatches', () => {
+  // "2026-11-16T15:00:00Z" is only a compact way to write the date and the time.
   const match = (id: number, playedAt: string | null, round: number | null = null) =>
-    ({ id, played_at: playedAt, round }) as Match;
+    ({
+      id,
+      date: playedAt ? playedAt.slice(0, 10) : null,
+      time: playedAt ? playedAt.slice(11, 16) : null,
+      round,
+    }) as Match;
 
   it('puts matches without a date (and round) into one "date TBD" group', () => {
-    const groups = groupMatches([match(1, null), match(2, null)], 'UTC');
+    const groups = groupMatches([match(1, null), match(2, null)]);
     expect(groups).toHaveLength(1);
     expect(groups[0].label).toBe(DATE_TBD);
     expect(groups[0].matches.map((m) => m.id)).toEqual([1, 2]);
   });
 
   it('keeps an undated match in its round, after the dated ones, and shows row dates', () => {
-    const [group] = groupMatches(
-      [match(1, null, 5), match(2, '2026-11-16T15:00:00Z', 5), match(3, '2026-11-16T12:00:00Z', 5)],
-      'UTC',
-    );
+    const [group] = groupMatches([
+      match(1, null, 5),
+      match(2, '2026-11-16T15:00:00Z', 5),
+      match(3, '2026-11-16T12:00:00Z', 5),
+    ]);
     expect(group.matches.map((m) => m.id)).toEqual([3, 2, 1]);
     expect(group.subtitle).toBeDefined();
     expect(group.showDate).toBe(true);
   });
 
+  it('keeps a match with a date but no time after the timed matches of that day', () => {
+    const noTime = { ...match(1, '2026-11-16T10:00:00Z', 5), time: null };
+    const [group] = groupMatches([noTime, match(2, '2026-11-16T18:00:00Z', 5)]);
+    expect(group.matches.map((m) => m.id)).toEqual([2, 1]);
+    expect(group.subtitle).toBe('16 листопада');
+  });
+
   it('has no date subtitle when the whole round has no dates yet', () => {
-    const [group] = groupMatches([match(1, null, 7), match(2, null, 7)], 'UTC');
+    const [group] = groupMatches([match(1, null, 7), match(2, null, 7)]);
     expect(group.subtitle).toBeUndefined();
     expect(group.showDate).toBe(false);
   });
 
   it('without rounds groups matches by calendar day and keeps the input order', () => {
-    const groups = groupMatches(
-      [
-        match(1, '2026-11-10T16:00:00Z'),
-        match(2, '2026-11-10T18:00:00Z'),
-        match(3, '2026-11-19T15:00:00Z'),
-      ],
-      'UTC',
-    );
+    const groups = groupMatches([
+      match(1, '2026-11-10T16:00:00Z'),
+      match(2, '2026-11-10T18:00:00Z'),
+      match(3, '2026-11-19T15:00:00Z'),
+    ]);
 
     expect(groups.map((g) => g.key)).toEqual(['day:2026-11-10', 'day:2026-11-19']);
     expect(groups[0].matches.map((m) => m.id)).toEqual([1, 2]);
@@ -72,21 +118,12 @@ describe('groupMatches', () => {
     expect(groups[0].subtitle).toBeUndefined();
   });
 
-  it('uses the given time zone to decide which day a match belongs to', () => {
-    // 23:30 UTC is already the next day in Kyiv.
-    const [group] = groupMatches([match(1, '2026-11-10T23:30:00Z')], 'Europe/Kyiv');
-    expect(group.key).toBe('day:2026-11-11');
-  });
-
   it('groups by round, sorts matches inside it and shows the date range', () => {
-    const groups = groupMatches(
-      [
-        match(1, '2026-11-16T15:00:00Z', 5),
-        match(2, '2026-11-14T15:00:00Z', 5),
-        match(3, '2026-11-09T15:00:00Z', 4),
-      ],
-      'UTC',
-    );
+    const groups = groupMatches([
+      match(1, '2026-11-16T15:00:00Z', 5),
+      match(2, '2026-11-14T15:00:00Z', 5),
+      match(3, '2026-11-09T15:00:00Z', 4),
+    ]);
 
     expect(groups.map((g) => g.label)).toEqual(['Тур 5', 'Тур 4']);
     expect(groups[0].matches.map((m) => m.id)).toEqual([2, 1]);
@@ -97,15 +134,15 @@ describe('groupMatches', () => {
   });
 
   it('keeps matches without a round in their own day groups next to rounds', () => {
-    const groups = groupMatches(
-      [match(1, '2026-11-14T15:00:00Z', 5), match(2, '2026-11-20T15:00:00Z')],
-      'UTC',
-    );
+    const groups = groupMatches([
+      match(1, '2026-11-14T15:00:00Z', 5),
+      match(2, '2026-11-20T15:00:00Z'),
+    ]);
     expect(groups.map((g) => g.key)).toEqual(['round:5', 'day:2026-11-20']);
   });
 
   it('returns an empty list for no matches', () => {
-    expect(groupMatches([], 'UTC')).toEqual([]);
+    expect(groupMatches([])).toEqual([]);
   });
 });
 

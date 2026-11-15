@@ -24,6 +24,11 @@
   grid-template-columns: 68px minmax(0, 1fr) 28px;
 }
 
+/* The date or time is not set yet: the words "уточнюється" need more room. */
+.withUnknown {
+  grid-template-columns: 76px minmax(0, 1fr) 28px;
+}
+
 /* Date (optional) + time, centered in the left column. */
 .when {
   grid-column: 1;
@@ -138,6 +143,9 @@
 
   .withDate {
     grid-template-columns: 130px minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+  .withUnknown:not(.withDate) {
+    grid-template-columns: 110px minmax(0, 1fr) auto minmax(0, 1fr);
   }
 
   .when {

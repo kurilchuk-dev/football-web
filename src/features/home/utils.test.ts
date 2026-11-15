@@ -30,6 +30,8 @@ const match = (
     away_team: away,
     home_score: homeScore,
     away_score: awayScore,
+    date: playedAt ? playedAt.slice(0, 10) : null,
+    time: playedAt ? playedAt.slice(11, 16) : null,
     played_at: playedAt,
     round: null,
   }) as Match;
@@ -49,6 +51,13 @@ describe('getNextMatch', () => {
     const dated = match(2, OURS, B, null, null, '2026-11-28T10:00:00Z');
     expect(getNextMatch([undated, dated])?.id).toBe(2);
     expect(getNextMatch([undated])?.id).toBe(1);
+  });
+
+  it('puts a match with a date but no time after the timed matches of that day', () => {
+    const noTime = { ...match(1, OURS, A, null, null, '2026-11-28T10:00:00Z'), time: null };
+    const timed = match(2, OURS, B, null, null, '2026-11-28T18:00:00Z');
+    expect(getNextMatch([noTime, timed])?.id).toBe(2);
+    expect(getNextMatch([noTime])?.id).toBe(1);
   });
 
   it('is undefined when our team has nothing scheduled', () => {

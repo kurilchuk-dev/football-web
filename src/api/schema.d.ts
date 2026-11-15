@@ -199,11 +199,12 @@ export interface components {
       home_score?: number | null;
       /** Format: int64 */
       away_score?: number | null;
-      /**
-       * Format: date-time
-       * @description Leave empty if the date is not known yet.
-       */
-      played_at?: string | null;
+      /** Format: date */
+      readonly date: string | null;
+      /** Format: time */
+      readonly time: string | null;
+      /** Format: date-time */
+      readonly played_at: string | null;
       /**
        * Format: int64
        * @description Round (matchday) number, e.g. 5 for round 5.
