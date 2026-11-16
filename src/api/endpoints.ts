@@ -14,6 +14,7 @@ export const ENDPOINTS = {
 export const ROUTE_PRELOADS: Record<string, string[]> = {
   '/': [ENDPOINTS.teams, ENDPOINTS.upcoming, ENDPOINTS.results, ENDPOINTS.standings],
   '/matches': [ENDPOINTS.teams, ENDPOINTS.results, ENDPOINTS.upcoming],
-  '/standings': [ENDPOINTS.teams, ENDPOINTS.standings],
+  // upcoming: the standings refresh on match days, which needs to know whether one is today.
+  '/standings': [ENDPOINTS.teams, ENDPOINTS.standings, ENDPOINTS.upcoming],
   '/team': [ENDPOINTS.teams],
 };

@@ -33,6 +33,7 @@ const routes: Record<string, RoutePrefetch> = {
     queries: (client) => [
       client.prefetchQuery(teamsQuery()),
       client.prefetchQuery(standingsQuery()),
+      client.prefetchQuery(upcomingQuery()),
     ],
   },
   '/team': {

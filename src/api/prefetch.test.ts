@@ -34,7 +34,7 @@ describe('prefetchRoute', () => {
     client.setDefaultOptions({ queries: { staleTime: 60_000 } });
     await prefetchRoute(client, '/standings');
     await prefetchRoute(client, '/standings');
-    expect(requested()).toHaveLength(2);
+    expect(requested()).toHaveLength(3);
   });
 
   it('swallows errors', async () => {
