@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useOurTeam } from '@/features/teams/api';
 import { useAccentFromLogo } from '@/features/theme/useAccentFromLogo';
@@ -13,7 +14,9 @@ export function Layout() {
     <>
       <Header />
       <main className={styles.main}>
-        <Outlet />
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
     </>
   );
