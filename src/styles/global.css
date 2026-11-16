@@ -8,8 +8,9 @@
      before the logo color is calculated. It is still overridden by the logo accent at runtime. */
   --accent: #ef3e39;
   --on-accent: #ffffff;
-  --font-body: 'Manrope', system-ui, sans-serif;
-  --font-display: 'Unbounded', sans-serif;
+  /* Self-hosted variable fonts (imported in main.tsx), so no third-party request blocks rendering. */
+  --font-body: 'Manrope Variable', system-ui, sans-serif;
+  --font-display: 'Unbounded Variable', sans-serif;
   --radius: 24px;
 }
 

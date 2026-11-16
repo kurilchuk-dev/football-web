@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { ACCENT_SAMPLE_WIDTH, optimizeImage } from '@/api/image';
 import { pickAccent, type Accent } from './accent';
 import { applyAccent, readStoredAccent, storeAccent } from './apply';
 
@@ -25,7 +26,9 @@ function sampleLogo(url: string): Promise<Accent | null> {
     };
     image.onerror = () => resolve(null);
     // A separate cache key: a plain <img> may already have cached this URL without CORS headers.
-    image.src = `${url}${url.includes('?') ? '&' : '?'}accent`;
+    // Only a 48px sample is read, so ask for a tiny copy instead of the full-size logo.
+    const small = optimizeImage(url, ACCENT_SAMPLE_WIDTH);
+    image.src = `${small}${small.includes('?') ? '&' : '?'}accent`;
   });
 }
 
