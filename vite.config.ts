@@ -4,6 +4,7 @@ import { loadEnv, type HtmlTagDescriptor, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 import { PERSIST_STORAGE_KEY, STALE_TIME_MS } from './src/api/config.ts';
 import { ROUTE_PRELOADS } from './src/api/endpoints.ts';
+import { preloadFonts } from './vite-plugins/fonts.ts';
 import { preloadApiData } from './vite-plugins/preload.ts';
 import { crawlerFiles, socialImage } from './vite-plugins/seo.ts';
 
@@ -42,6 +43,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       preconnect(env.VITE_API_URL),
+      preloadFonts(),
       preloadApiData(env.VITE_API_URL, {
         routes: ROUTE_PRELOADS,
         freshMs: STALE_TIME_MS,
