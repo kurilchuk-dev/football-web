@@ -8,9 +8,13 @@ import { PERSIST_BUSTER, PERSIST_MAX_AGE_MS, createPersister } from './api/persi
 import { createQueryClient } from './api/queryClient';
 import App from './App';
 import { applyStoredAccent } from './features/theme/apply';
+import { installPreloadErrorReload } from './features/update/reload';
 
 // Club color from the previous visit, applied before the first paint.
 applyStoredAccent();
+
+// A page left open across a release recovers by reloading instead of showing a blank screen.
+installPreloadErrorReload();
 
 const queryClient = createQueryClient();
 const persister = createPersister();
