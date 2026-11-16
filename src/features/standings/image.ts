@@ -9,7 +9,7 @@ const PADDING = 56;
 const HEADER_HEIGHT = 230;
 const TABLE_HEAD_HEIGHT = 58;
 const ROW_HEIGHT = 76;
-const FOOTER_HEIGHT = 150;
+const FOOTER_HEIGHT = 56;
 
 /** Column centers of the numbers (and the right edge of the team name). */
 const COLUMNS = { played: 650, won: 716, drawn: 776, lost: 836, goals: 930, points: 1012 } as const;
@@ -138,7 +138,7 @@ function draw(
   context.fillRect(0, 0, 14, height);
 
   text(LEAGUE_NAME.toUpperCase(), PADDING, 74, `700 22px ${BODY_FONT}`, PALETTE.muted);
-  // The address also at the top, so it survives if the bottom of the picture is cut away.
+  // The site address at the top right, inside the margins, away from the edges that get cropped.
   drawLinkPill(context, options.footer, WIDTH - PADDING, 74, {
     size: 22,
     fill: PALETTE.surface,
@@ -238,16 +238,6 @@ function draw(
     text(String(row.lost), COLUMNS.lost, middle + 1, num, quiet, 'center');
     text(`${row.goals_for}:${row.goals_against}`, COLUMNS.goals, middle + 1, num, quiet, 'center');
     text(String(row.points), COLUMNS.points, middle + 1, `800 34px ${BODY_FONT}`, color, 'center');
-  });
-
-  // The site address, large and well inside the edges so that a crop or a chat preview does
-  // not cut it off.
-  drawLinkPill(context, options.footer, WIDTH / 2, height - FOOTER_HEIGHT / 2, {
-    size: 32,
-    fill: colors.fill,
-    color: colors.onAccent,
-    maxWidth: WIDTH - 2 * PADDING - 40,
-    align: 'center',
   });
 }
 
