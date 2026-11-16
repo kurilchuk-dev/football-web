@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useOurTeam } from '@/features/teams/api';
 import styles from './Header.module.css';
+import { ThemeToggle } from './ThemeToggle';
 import { HomeIcon, MatchesIcon, StandingsIcon, TeamIcon } from './NavIcons';
 
 const links = [
@@ -59,6 +60,8 @@ export function Header() {
             </NavLink>
           ))}
         </nav>
+
+        <ThemeToggle />
       </div>
     </header>
   );
