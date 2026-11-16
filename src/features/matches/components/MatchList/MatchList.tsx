@@ -17,10 +17,10 @@ export function MatchList({ matches, emptyText }: MatchListProps) {
     <div className={styles.days}>
       {groupMatches(matches).map((group) => (
         <section key={group.key} className={styles.group}>
-          <h3 className={styles.heading}>
+          <h2 className={styles.heading}>
             <span className={styles.label}>{group.label}</span>
             {group.subtitle && <span className={styles.subtitle}>{group.subtitle}</span>}
-          </h3>
+          </h2>
           <div className={styles.list}>
             {group.matches.map((match) => (
               <MatchCard key={match.id} match={match} showDate={group.showDate} />

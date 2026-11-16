@@ -4,6 +4,8 @@ export const ENDPOINTS = {
   upcoming: '/matches/upcoming/',
   results: '/matches/results/',
   standings: '/standings/',
+  /** Needs no team id, so it can be requested together with the teams. */
+  ourPlayers: '/players/?our_team=true',
 } as const;
 
 /**
@@ -12,8 +14,15 @@ export const ENDPOINTS = {
  * Keep it in step with the hooks that read these endpoints.
  */
 export const ROUTE_PRELOADS: Record<string, string[]> = {
-  '/': [ENDPOINTS.teams, ENDPOINTS.upcoming, ENDPOINTS.results, ENDPOINTS.standings],
+  '/': [
+    ENDPOINTS.teams,
+    ENDPOINTS.upcoming,
+    ENDPOINTS.results,
+    ENDPOINTS.standings,
+    ENDPOINTS.ourPlayers,
+  ],
   '/matches': [ENDPOINTS.teams, ENDPOINTS.results, ENDPOINTS.upcoming],
-  '/standings': [ENDPOINTS.teams, ENDPOINTS.standings],
-  '/team': [ENDPOINTS.teams],
+  // upcoming: the standings refresh on match days, which needs to know whether one is today.
+  '/standings': [ENDPOINTS.teams, ENDPOINTS.standings, ENDPOINTS.upcoming],
+  '/team': [ENDPOINTS.teams, ENDPOINTS.ourPlayers],
 };
