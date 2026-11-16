@@ -1,5 +1,6 @@
 import { useStandings } from '@/features/standings/api';
 import { StandingsBanner } from '@/features/standings/components/StandingsBanner/StandingsBanner';
+import { StandingsImageActions } from '@/features/standings/components/StandingsImageActions/StandingsImageActions';
 import { StandingsTable } from '@/features/standings/components/StandingsTable/StandingsTable';
 import { getStandingsSummary } from '@/features/standings/utils';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -17,6 +18,7 @@ export function StandingsPage() {
   return (
     <>
       <StandingsBanner summary={getStandingsSummary(data)} />
+      <StandingsImageActions rows={data} />
       <StandingsTable rows={data} />
     </>
   );

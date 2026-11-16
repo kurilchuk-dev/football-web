@@ -1,0 +1,77 @@
+.wrap {
+  position: relative;
+  flex: none;
+}
+
+/* Round icon on phones (like the theme toggle), icon with a label from tablets up. */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.button:hover {
+  color: var(--accent);
+}
+.button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.label {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .button {
+    padding: 0 16px 0 12px;
+  }
+  .label {
+    display: inline;
+  }
+}
+
+.help {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  width: 260px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+.help p {
+  margin: 0 0 10px;
+}
+
+.close {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
