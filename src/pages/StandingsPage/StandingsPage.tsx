@@ -18,8 +18,8 @@ export function StandingsPage() {
   return (
     <>
       <StandingsBanner summary={getStandingsSummary(data)} />
-      <StandingsImageActions rows={data} />
       <StandingsTable rows={data} />
+      <StandingsImageActions rows={data} />
     </>
   );
 }
