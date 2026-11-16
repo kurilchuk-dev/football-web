@@ -1,6 +1,8 @@
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useOurTeam } from '@/features/teams/api';
 import { useAccentFromLogo } from '@/features/theme/useAccentFromLogo';
+import { ApiStatusNotice } from '../ApiStatusNotice/ApiStatusNotice';
 import { Header } from '../Header/Header';
 import styles from './Layout.module.css';
 
@@ -13,7 +15,10 @@ export function Layout() {
     <>
       <Header />
       <main className={styles.main}>
-        <Outlet />
+        <ApiStatusNotice />
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
     </>
   );

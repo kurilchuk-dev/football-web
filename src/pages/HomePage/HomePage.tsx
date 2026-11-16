@@ -5,6 +5,7 @@ import { NextMatchCard } from '@/features/home/components/NextMatchCard/NextMatc
 import { RecentResults } from '@/features/home/components/RecentResults/RecentResults';
 import { SeasonCard } from '@/features/home/components/SeasonCard/SeasonCard';
 import { SquadSection } from '@/features/home/components/SquadSection/SquadSection';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import styles from './HomePage.module.css';
 
 /**
@@ -12,6 +13,7 @@ import styles from './HomePage.module.css';
  * the top of the table and the squad. Every block loads and renders on its own.
  */
 export function HomePage() {
+  usePageMeta();
   return (
     <>
       <div className={styles.hero}>

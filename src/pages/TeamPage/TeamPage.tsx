@@ -5,9 +5,14 @@ import {
   PlayerGridSkeleton,
 } from '@/features/players/components/PlayerGrid/PlayerGrid';
 import { sortPlayers } from '@/features/players/utils';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import styles from './TeamPage.module.css';
 
 export function TeamPage() {
+  usePageMeta({
+    title: 'Склад',
+    description: 'Склад команди «Черкаси ФАМ»: гравці та їхні номери.',
+  });
   const { players, isPending, isError, noTeam } = useOurSquad();
 
   if (isError) return <p>Не вдалося завантажити команду.</p>;
