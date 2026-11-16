@@ -6,7 +6,7 @@ import { PERSIST_STORAGE_KEY, STALE_TIME_MS } from './src/api/config.ts';
 import { ROUTE_PRELOADS } from './src/api/endpoints.ts';
 import { preloadFonts } from './vite-plugins/fonts.ts';
 import { preloadApiData } from './vite-plugins/preload.ts';
-import { crawlerFiles, socialImage } from './vite-plugins/seo.ts';
+import { crawlerFiles, socialImage, structuredData } from './vite-plugins/seo.ts';
 
 /**
  * Opens the connections to the API and to Cloudinary while the page is still
@@ -50,6 +50,7 @@ export default defineConfig(({ mode }) => {
         storageKey: PERSIST_STORAGE_KEY,
       }),
       socialImage(env.VITE_SITE_URL),
+      structuredData(env.VITE_SITE_URL),
       crawlerFiles(env.VITE_SITE_URL, SITE_ROUTES),
     ],
     resolve: {
