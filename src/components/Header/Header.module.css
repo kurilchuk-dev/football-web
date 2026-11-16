@@ -185,3 +185,25 @@
     display: none;
   }
 }
+
+.themeToggle {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.themeToggle:hover {
+  color: var(--accent);
+}
+.themeToggle svg {
+  width: 20px;
+  height: 20px;
+}
