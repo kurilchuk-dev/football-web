@@ -2,11 +2,16 @@ import { useSearchParams } from 'react-router-dom';
 import { useResults, useUpcoming } from '@/features/matches/api';
 import { MatchList } from '@/features/matches/components/MatchList/MatchList';
 import { MatchTabs } from '@/features/matches/components/MatchTabs/MatchTabs';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import styles from './MatchesPage.module.css';
 
 type TabId = 'results' | 'calendar';
 
 export function MatchesPage() {
+  usePageMeta({
+    title: 'Матчі',
+    description: 'Результати зіграних матчів і календар найближчих ігор команди «Черкаси ФАМ».',
+  });
   const results = useResults();
   const upcoming = useUpcoming();
   const [searchParams, setSearchParams] = useSearchParams();
