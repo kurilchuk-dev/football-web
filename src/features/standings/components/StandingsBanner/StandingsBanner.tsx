@@ -1,3 +1,4 @@
+import { LEAGUE_NAME } from '../../constants';
 import type { StandingsSummary } from '../../utils';
 import styles from './StandingsBanner.module.css';
 
@@ -15,7 +16,7 @@ export function StandingsBanner({ summary }: StandingsBannerProps) {
   return (
     <header className={styles.banner}>
       <div>
-        <p className={styles.eyebrow}>Чемпіонат Черкаського району</p>
+        <p className={styles.eyebrow}>{LEAGUE_NAME}</p>
         <h1 className={styles.title}>Турнірна таблиця</h1>
       </div>
       <dl className={styles.stats}>

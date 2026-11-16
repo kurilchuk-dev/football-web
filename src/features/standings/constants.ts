@@ -14,5 +14,8 @@ export const FORM_LETTERS: Record<FormResult, string> = {
   L: 'П',
 };
 
+/** Name of the competition, shown above the table title and on the shared image. */
+export const LEAGUE_NAME = 'Чемпіонат Черкаського району';
+
 /** Positions highlighted with a medal. */
 export const PODIUM_PLACES = 3;

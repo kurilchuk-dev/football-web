@@ -207,3 +207,11 @@
   width: 20px;
   height: 20px;
 }
+
+/* The install button and the theme toggle sit together at the right edge. */
+.tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
