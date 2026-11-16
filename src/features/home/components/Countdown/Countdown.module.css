@@ -35,7 +35,7 @@
   margin: 0;
   padding: 14px;
   border-radius: 16px;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: var(--on-accent);
   font-weight: 800;
   text-align: center;

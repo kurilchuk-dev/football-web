@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pickAccent } from './accent';
+import { contrastRatio, fillFor, pickAccent } from './accent';
 
 /** RGBA pixels: `n` copies of the given color. */
 const pixels = (n: number, rgba: [number, number, number, number]) =>
@@ -57,5 +57,30 @@ describe('pickAccent', () => {
   it('chooses readable text for the accent', () => {
     expect(pickAccent(pixels(100, [230, 210, 20, 255]))!.onAccent).toBe('#0b0f0d');
     expect(pickAccent(pixels(100, [20, 40, 200, 255]))!.onAccent).toBe('#ffffff');
+  });
+});
+
+describe('fillFor', () => {
+  it('darkens a bright accent until its white text is readable', () => {
+    const accent = { accent: '#ef3e39', onAccent: '#ffffff' };
+    expect(contrastRatio(accent.accent, accent.onAccent)).toBeLessThan(4.5);
+    const fill = fillFor(accent);
+    expect(contrastRatio(fill, '#ffffff')).toBeGreaterThanOrEqual(4.5);
+    expect(fill).not.toBe(accent.accent);
+  });
+
+  it('keeps the accent when its text is already readable', () => {
+    const accent = { accent: '#0a3d8f', onAccent: '#ffffff' };
+    expect(fillFor(accent)).toBe(accent.accent);
+  });
+
+  it('lightens an accent that carries dark text', () => {
+    const accent = { accent: '#2a7a4b', onAccent: '#0b0f0d' };
+    const fill = fillFor(accent);
+    expect(contrastRatio(fill, '#0b0f0d')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('matches the default fill in global.css for the default accent', () => {
+    expect(fillFor({ accent: '#ef3e39', onAccent: '#ffffff' })).toBe('#e71913');
   });
 });

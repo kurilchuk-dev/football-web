@@ -46,7 +46,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: var(--on-accent);
   display: flex;
   align-items: center;
@@ -178,7 +178,7 @@
 
   .active,
   .active:hover {
-    background: var(--accent);
+    background: var(--accent-fill);
     color: var(--on-accent);
   }
   .active::before {
