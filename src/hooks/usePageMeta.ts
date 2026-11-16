@@ -14,9 +14,19 @@ function descriptionTag(): HTMLMetaElement | null {
   return document.head.querySelector<HTMLMetaElement>('meta[name="description"]');
 }
 
+/** Canonical address of the current page, or undefined when the site address is not configured. */
+function canonicalHref(): string | undefined {
+  const site = import.meta.env.VITE_SITE_URL as string | undefined;
+  if (!site) return undefined;
+  const base = site.replace(/\/+$/, '');
+  const path = window.location.pathname.replace(/\/+$/, '');
+  return `${base}${path}`;
+}
+
 /**
- * Sets the tab title and description of the current page and puts them back
+ * Sets the tab title, description and canonical address of the current page and puts them back
  * when the page is left, so every route has its own title in the history and in search results.
+ * One index.html serves all routes, so a canonical link cannot be written into it statically.
  */
 export function usePageMeta({ title, description, noindex = false }: PageMeta = {}) {
   useEffect(() => {
@@ -35,10 +45,20 @@ export function usePageMeta({ title, description, noindex = false }: PageMeta = 
       document.head.append(robots);
     }
 
+    let canonical: HTMLLinkElement | undefined;
+    const href = noindex ? undefined : canonicalHref();
+    if (href) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      canonical.href = href;
+      document.head.append(canonical);
+    }
+
     return () => {
       document.title = previousTitle;
       if (tag && previousDescription !== undefined) tag.content = previousDescription;
       robots?.remove();
+      canonical?.remove();
     };
   }, [title, description, noindex]);
 }
