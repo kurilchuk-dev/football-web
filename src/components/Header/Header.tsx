@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { LOGO_WIDTH, optimizeImage } from '@/api/image';
 import { prefetchRoute } from '@/api/prefetch';
 import { useOurTeam } from '@/features/teams/api';
+import { InstallButton } from '../InstallButton/InstallButton';
 import styles from './Header.module.css';
 import { ThemeToggle } from './ThemeToggle';
 import { HomeIcon, MatchesIcon, StandingsIcon, TeamIcon } from './NavIcons';
@@ -67,7 +68,10 @@ export function Header() {
           ))}
         </nav>
 
-        <ThemeToggle />
+        <div className={styles.tools}>
+          <InstallButton />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
