@@ -1,4 +1,4 @@
-import type { Accent } from './accent';
+import { fillFor, type Accent } from './accent';
 
 const STORAGE_KEY = 'club-accent';
 
@@ -13,9 +13,11 @@ export function applyAccent(accent: Accent | null) {
   if (accent) {
     style.setProperty('--accent', accent.accent);
     style.setProperty('--on-accent', accent.onAccent);
+    style.setProperty('--accent-fill', fillFor(accent));
   } else {
     style.removeProperty('--accent');
     style.removeProperty('--on-accent');
+    style.removeProperty('--accent-fill');
   }
 }
 

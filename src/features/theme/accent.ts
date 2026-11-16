@@ -59,6 +59,38 @@ function luminance([r, g, b]: number[]): number {
   return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
 }
 
+/** WCAG AA contrast for normal-size text. */
+const MIN_CONTRAST = 4.5;
+
+const channelsOf = (hex: string): [number, number, number] => [
+  parseInt(hex.slice(1, 3), 16),
+  parseInt(hex.slice(3, 5), 16),
+  parseInt(hex.slice(5, 7), 16),
+];
+
+/** WCAG contrast ratio of two #rrggbb colors (1 to 21). */
+export function contrastRatio(a: string, b: string): number {
+  const [la, lb] = [luminance(channelsOf(a)), luminance(channelsOf(b))];
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+}
+
+/**
+ * The color to fill surfaces that carry `onAccent` text: the accent itself when its text is
+ * already readable, otherwise the accent made just dark enough (or light enough, for dark text)
+ * to reach 4.5:1. A bright brand red with white text is only about 3.9:1 on its own.
+ */
+export function fillFor({ accent, onAccent }: Accent): string {
+  const [h, s, l0] = rgbToHsl(...channelsOf(accent));
+  const step = luminance(channelsOf(onAccent)) > 0.5 ? -0.01 : 0.01;
+  let l = l0;
+  let fill = accent;
+  while (contrastRatio(fill, onAccent) < MIN_CONTRAST && l > 0.05 && l < 0.95) {
+    l += step;
+    fill = toHex(hslToRgb(h, s, l));
+  }
+  return fill;
+}
+
 /**
  * Picks the club's accent color from RGBA pixels (as returned by getImageData):
  * finds the most common vivid hue, ignoring transparent, gray, near-black and

@@ -8,6 +8,8 @@
      before the logo color is calculated. It is still overridden by the logo accent at runtime. */
   --accent: #ef3e39;
   --on-accent: #ffffff;
+  /* Surface behind --on-accent text: the accent darkened to reach 4.5:1 (see fillFor in accent.ts). */
+  --accent-fill: #e71913;
   /* Self-hosted variable fonts (imported in main.tsx), so no third-party request blocks rendering. */
   --font-body: 'Manrope Variable', system-ui, sans-serif;
   --font-display: 'Unbounded Variable', sans-serif;
