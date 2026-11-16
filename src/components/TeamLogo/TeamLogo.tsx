@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LOGO_WIDTH, optimizeImage } from '@/api/image';
 import styles from './TeamLogo.module.css';
 
 interface TeamLogoProps {
@@ -20,7 +21,7 @@ export function TeamLogo({ name, logo, ours = false }: TeamLogoProps) {
     return (
       <img
         className={styles.logo}
-        src={logo}
+        src={optimizeImage(logo, LOGO_WIDTH)}
         alt=""
         loading="lazy"
         onError={() => setFailedLogo(logo)}

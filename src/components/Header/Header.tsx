@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { LOGO_WIDTH, optimizeImage } from '@/api/image';
 import { useOurTeam } from '@/features/teams/api';
 import styles from './Header.module.css';
 import { ThemeToggle } from './ThemeToggle';
@@ -32,7 +33,7 @@ export function Header() {
           {showLogo ? (
             <img
               className={styles.logoImage}
-              src={logo}
+              src={optimizeImage(logo, LOGO_WIDTH)}
               alt=""
               onError={() => setFailedLogo(logo)}
             />

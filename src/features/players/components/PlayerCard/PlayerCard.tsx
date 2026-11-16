@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { optimizeImage, PHOTO_WIDTH } from '@/api/image';
 import type { Player } from '@/api/types';
 import { getInitials } from '../../utils';
 import styles from './PlayerCard.module.css';
@@ -25,7 +26,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
           <>
             <img
               className={styles.photo}
-              src={photo}
+              src={optimizeImage(photo, PHOTO_WIDTH)}
               alt=""
               loading="lazy"
               onError={() => setFailedPhoto(photo)}
