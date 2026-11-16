@@ -1,3 +1,20 @@
+/* Hidden until it gets keyboard focus: lets keyboard users skip the menu. */
+.skipLink {
+  position: absolute;
+  top: -64px;
+  left: 16px;
+  z-index: 100;
+  padding: 10px 16px;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+}
+.skipLink:focus {
+  top: 12px;
+}
+
 /* Phones: leave room for the fixed bottom tab bar. */
 .main {
   max-width: 1160px;
