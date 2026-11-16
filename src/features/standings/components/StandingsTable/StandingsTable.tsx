@@ -1,12 +1,15 @@
 import type { StandingRow } from '@/api/types';
+import type { RowChange } from '../../simulation';
 import { StandingsRow } from './StandingsRow';
 import styles from './StandingsTable.module.css';
 
 interface StandingsTableProps {
   rows: StandingRow[];
+  /** Simulation only: how each team moved against the real table (by team id). */
+  changes?: Map<number, RowChange>;
 }
 
-export function StandingsTable({ rows }: StandingsTableProps) {
+export function StandingsTable({ rows, changes }: StandingsTableProps) {
   return (
     <div className={styles.card}>
       <table className={styles.table}>
@@ -28,7 +31,7 @@ export function StandingsTable({ rows }: StandingsTableProps) {
         </thead>
         <tbody>
           {rows.map((row) => (
-            <StandingsRow key={row.team.id} row={row} />
+            <StandingsRow key={row.team.id} row={row} change={changes?.get(row.team.id)} />
           ))}
         </tbody>
       </table>
