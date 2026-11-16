@@ -1,4 +1,5 @@
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { PERSIST_STORAGE_KEY } from './config';
 
 /** How long a saved copy may be shown. Must not exceed the query cache's gcTime. */
 export const PERSIST_MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -21,5 +22,5 @@ function safeStorage(): Storage | undefined {
  * in the background.
  */
 export function createPersister() {
-  return createSyncStoragePersister({ storage: safeStorage(), key: 'football-query-cache' });
+  return createSyncStoragePersister({ storage: safeStorage(), key: PERSIST_STORAGE_KEY });
 }
