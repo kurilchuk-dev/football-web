@@ -13,8 +13,11 @@ export function Layout() {
 
   return (
     <>
+      <a className={styles.skipLink} href="#main">
+        Перейти до змісту
+      </a>
       <Header />
-      <main className={styles.main}>
+      <main id="main" tabIndex={-1} className={styles.main}>
         <ApiStatusNotice />
         <Suspense fallback={null}>
           <Outlet />
