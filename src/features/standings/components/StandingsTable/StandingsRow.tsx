@@ -1,20 +1,25 @@
 import type { StandingRow } from '@/api/types';
+import type { RowChange } from '../../simulation';
 import { FormDots } from '../FormDots/FormDots';
 import { PlaceBadge } from '../PlaceBadge/PlaceBadge';
+import { RankChange } from '../RankChange/RankChange';
 import { TeamCell } from '../TeamCell/TeamCell';
 import styles from './StandingsTable.module.css';
 
 interface StandingsRowProps {
   row: StandingRow;
+  /** Simulation only: places and points gained against the real table. */
+  change?: RowChange;
 }
 
-export function StandingsRow({ row }: StandingsRowProps) {
+export function StandingsRow({ row, change }: StandingsRowProps) {
   const ours = row.team.is_our_team;
 
   return (
     <tr className={ours ? styles.ours : undefined}>
       <td>
         <PlaceBadge position={row.position} ours={ours} />
+        {change && <RankChange value={change.position} ours={ours} />}
       </td>
       <td>
         <TeamCell team={row.team} ours={ours} />
@@ -34,7 +39,14 @@ export function StandingsRow({ row }: StandingsRowProps) {
       <td className={`${styles.full} ${styles.form}`}>
         <FormDots form={row.form} ours={ours} />
       </td>
-      <td className={styles.points}>{row.points}</td>
+      <td className={styles.points}>
+        {row.points}
+        {change && change.points > 0 && (
+          <span className={`${styles.pointsDelta} ${ours ? styles.deltaOurs : ''}`}>
+            +{change.points}
+          </span>
+        )}
+      </td>
     </tr>
   );
 }

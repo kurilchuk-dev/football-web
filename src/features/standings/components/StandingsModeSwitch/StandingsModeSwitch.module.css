@@ -1,0 +1,30 @@
+.switch {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.option {
+  padding: 8px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.option:hover {
+  color: var(--text);
+}
+
+.active,
+.active:hover {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
