@@ -9,7 +9,7 @@ const PADDING = 56;
 const HEADER_HEIGHT = 230;
 const TABLE_HEAD_HEIGHT = 58;
 const ROW_HEIGHT = 76;
-const FOOTER_HEIGHT = 96;
+const FOOTER_HEIGHT = 150;
 
 /** Column centers of the numbers (and the right edge of the team name). */
 const COLUMNS = { played: 650, won: 716, drawn: 776, lost: 836, goals: 930, points: 1012 } as const;
@@ -138,6 +138,15 @@ function draw(
   context.fillRect(0, 0, 14, height);
 
   text(LEAGUE_NAME.toUpperCase(), PADDING, 74, `700 22px ${BODY_FONT}`, PALETTE.muted);
+  // The address also at the top, so it survives if the bottom of the picture is cut away.
+  drawLinkPill(context, options.footer, WIDTH - PADDING, 74, {
+    size: 22,
+    fill: PALETTE.surface,
+    color: PALETTE.text,
+    border: PALETTE.border,
+    maxWidth: 400,
+    align: 'right',
+  });
   text('Турнірна таблиця', PADDING, 132, `800 54px ${DISPLAY_FONT}`, PALETTE.text);
   text(options.dateLabel, PADDING, 190, `600 26px ${BODY_FONT}`, PALETTE.muted);
 
@@ -231,14 +240,65 @@ function draw(
     text(String(row.points), COLUMNS.points, middle + 1, `800 34px ${BODY_FONT}`, color, 'center');
   });
 
-  text(
-    options.footer,
-    WIDTH / 2,
-    height - FOOTER_HEIGHT / 2 + 4,
-    `600 24px ${BODY_FONT}`,
-    PALETTE.muted,
-    'center',
-  );
+  // The site address, large and well inside the edges so that a crop or a chat preview does
+  // not cut it off.
+  drawLinkPill(context, options.footer, WIDTH / 2, height - FOOTER_HEIGHT / 2, {
+    size: 32,
+    fill: colors.fill,
+    color: colors.onAccent,
+    maxWidth: WIDTH - 2 * PADDING - 40,
+    align: 'center',
+  });
+}
+
+interface LinkPillStyle {
+  size: number;
+  fill: string;
+  color: string;
+  maxWidth: number;
+  /** `center`: x is the middle of the pill, `right`: x is its right edge. */
+  align: 'center' | 'right';
+  border?: string;
+}
+
+/** A rounded badge with the site address; the text shrinks if it would not fit `maxWidth`. */
+function drawLinkPill(
+  context: CanvasRenderingContext2D,
+  label: string,
+  x: number,
+  centerY: number,
+  { size, fill, color, maxWidth, align, border }: LinkPillStyle,
+) {
+  const padX = Math.round(size * 0.9);
+  const padY = Math.round(size * 0.55);
+  let fontSize = size;
+  let textWidth = 0;
+  for (; fontSize >= 16; fontSize -= 2) {
+    context.font = `800 ${fontSize}px ${BODY_FONT}`;
+    textWidth = context.measureText(label).width;
+    if (textWidth + 2 * padX <= maxWidth) break;
+  }
+  const width = textWidth + 2 * padX;
+  const height = fontSize + 2 * padY;
+  const left = align === 'center' ? x - width / 2 : x - width;
+  const top = centerY - height / 2;
+
+  context.beginPath();
+  if (typeof context.roundRect === 'function')
+    context.roundRect(left, top, width, height, height / 2);
+  else context.rect(left, top, width, height);
+  context.fillStyle = fill;
+  context.fill();
+  if (border) {
+    context.strokeStyle = border;
+    context.lineWidth = 2;
+    context.stroke();
+  }
+
+  context.fillStyle = color;
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText(label, left + width / 2, centerY + 1);
 }
 
 function toBlob(canvas: HTMLCanvasElement): Promise<Blob> {
