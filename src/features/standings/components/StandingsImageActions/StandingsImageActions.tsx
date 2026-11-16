@@ -1,22 +1,21 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { StandingRow } from '@/api/types';
 import { imageFileName, renderStandingsImage } from '../../image';
+import { ImagePreview } from './ImagePreview';
 import styles from './StandingsImageActions.module.css';
 
 interface StandingsImageActionsProps {
   rows: StandingRow[];
 }
 
-type Busy = 'download' | 'share' | null;
+/** Phones and tablets (the main pointer is a finger): there a picture belongs in the gallery. */
+function isTouchDevice(): boolean {
+  return typeof window !== 'undefined' && Boolean(window.matchMedia?.('(pointer: coarse)').matches);
+}
 
-/** True when the browser can share a file (mostly phones): the share sheet saves it to the gallery. */
-function canShareFiles(): boolean {
+function canShare(file: File): boolean {
   try {
-    return (
-      typeof navigator !== 'undefined' &&
-      typeof navigator.canShare === 'function' &&
-      navigator.canShare({ files: [new File([], 'table.png', { type: 'image/png' })] })
-    );
+    return typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] });
   } catch {
     return false;
   }
@@ -38,70 +37,121 @@ function makeImage(rows: StandingRow[]) {
   return renderStandingsImage(rows, { dateLabel, footer });
 }
 
-/** Buttons to save the table as a picture (for chats and social networks) or to share it. */
-export function StandingsImageActions({ rows }: StandingsImageActionsProps) {
-  const [busy, setBusy] = useState<Busy>(null);
-  const [failed, setFailed] = useState(false);
-  const [shareable] = useState(canShareFiles);
+function download(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = name;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
 
-  const run = async (kind: Exclude<Busy, null>) => {
-    setBusy(kind);
+/**
+ * One "Import" button under the table that turns it into a picture.
+ * - Computer: the PNG file is downloaded.
+ * - Phone or tablet: the system share sheet opens with the picture, where "Save image" puts it
+ *   into the gallery. If the browser cannot share files, the picture is shown full screen with
+ *   a hint to press and hold it (the browser's own "save image" does the rest).
+ */
+export function StandingsImageActions({ rows }: StandingsImageActionsProps) {
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const button = useRef<HTMLButtonElement>(null);
+  const prepared = useRef<{ rows: StandingRow[]; image: Promise<Blob> } | null>(null);
+
+  /** The picture of these rows, drawn once and reused (also by a click that comes later). */
+  const prepare = useCallback(() => {
+    let entry = prepared.current;
+    if (!entry || entry.rows !== rows) {
+      const image = makeImage(rows);
+      const created = { rows, image };
+      entry = created;
+      prepared.current = created;
+      // A failed picture is not kept, so the next click tries again.
+      image.catch(() => {
+        if (prepared.current === created) prepared.current = null;
+      });
+    }
+    return entry.image;
+  }, [rows]);
+
+  // On touch devices the share sheet must open right in the tap (browsers refuse it after a long
+  // wait), so draw the picture in advance, as soon as the button comes into view.
+  useEffect(() => {
+    const element = button.current;
+    if (!element || !isTouchDevice() || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          void prepare().catch(() => undefined);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [prepare]);
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
+  const importImage = async () => {
+    setBusy(true);
     setFailed(false);
     try {
-      const blob = await makeImage(rows);
+      const blob = await prepare();
       const name = imageFileName();
-      if (kind === 'share') {
-        const file = new File([blob], name, { type: 'image/png' });
-        await navigator.share({ files: [file], title: 'Турнірна таблиця' });
-      } else {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = name;
-        document.body.append(link);
-        link.click();
-        link.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      if (!isTouchDevice()) {
+        download(blob, name);
+        return;
       }
-    } catch (error) {
-      // Closing the share sheet is not an error.
-      if (!(error instanceof DOMException && error.name === 'AbortError')) setFailed(true);
+      const file = new File([blob], name, { type: 'image/png' });
+      if (canShare(file)) {
+        try {
+          await navigator.share({ files: [file], title: 'Турнірна таблиця' });
+          return;
+        } catch (error) {
+          // Closing the share sheet is not an error and needs no follow-up.
+          if (error instanceof DOMException && error.name === 'AbortError') return;
+          // Sharing was refused (for example the tap was too long ago): show the picture instead.
+        }
+      }
+      setPreview(URL.createObjectURL(blob));
+    } catch {
+      setFailed(true);
     } finally {
-      setBusy(null);
+      setBusy(false);
     }
   };
 
   return (
     <div className={styles.actions}>
       <button
+        ref={button}
         type="button"
         className={styles.button}
-        onClick={() => run('download')}
-        disabled={busy !== null}
+        onClick={importImage}
+        disabled={busy}
+        aria-label="Імпортувати таблицю як картинку"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 3v12m0 0-4-4m4 4 4-4M4 20h16" />
         </svg>
-        {busy === 'download' ? 'Створюю картинку…' : 'Завантажити картинку'}
+        {busy ? 'Створюю картинку…' : 'Імпортувати'}
       </button>
-      {shareable && (
-        <button
-          type="button"
-          className={styles.button}
-          onClick={() => run('share')}
-          disabled={busy !== null}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 16V4m0 0-4 4m4-4 4 4M5 13v6h14v-6" />
-          </svg>
-          {busy === 'share' ? 'Створюю картинку…' : 'Поділитись'}
-        </button>
-      )}
       {failed && (
         <span className={styles.error} role="alert">
           Не вдалося створити картинку. Спробуйте ще раз.
         </span>
       )}
+      {preview && <ImagePreview src={preview} onClose={() => setPreview(null)} />}
     </div>
   );
 }
