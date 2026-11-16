@@ -1,5 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { resultsQuery, upcomingQuery } from '@/features/matches/api';
+import { ourPlayersQuery } from '@/features/players/api';
 import { standingsQuery } from '@/features/standings/api';
 import { teamsQuery } from '@/features/teams/api';
 import { loadMatchesPage, loadStandingsPage, loadTeamPage } from '@/routes';
@@ -18,6 +19,7 @@ const routes: Record<string, RoutePrefetch> = {
       client.prefetchQuery(upcomingQuery()),
       client.prefetchQuery(resultsQuery()),
       client.prefetchQuery(standingsQuery()),
+      client.prefetchQuery(ourPlayersQuery()),
     ],
   },
   '/matches': {
@@ -38,7 +40,10 @@ const routes: Record<string, RoutePrefetch> = {
   },
   '/team': {
     load: loadTeamPage,
-    queries: (client) => [client.prefetchQuery(teamsQuery())],
+    queries: (client) => [
+      client.prefetchQuery(teamsQuery()),
+      client.prefetchQuery(ourPlayersQuery()),
+    ],
   },
 };
 
