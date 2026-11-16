@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client';
 import './styles/fonts.css';
 import './styles/global.css';
 import { BrowserRouter } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { PERSIST_BUSTER, PERSIST_MAX_AGE_MS, createPersister } from './api/persist';
 import { createQueryClient } from './api/queryClient';
 import App from './App';
 import { applyStoredAccent } from './features/theme/apply';
@@ -12,13 +13,17 @@ import { applyStoredAccent } from './features/theme/apply';
 applyStoredAccent();
 
 const queryClient = createQueryClient();
+const persister = createPersister();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister, maxAge: PERSIST_MAX_AGE_MS, buster: PERSIST_BUSTER }}
+    >
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </StrictMode>,
 );
