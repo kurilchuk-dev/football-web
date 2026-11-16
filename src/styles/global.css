@@ -38,3 +38,26 @@ a {
   --text: #121814;
   --muted: #5f6b64;
 }
+
+/* A visible keyboard focus ring everywhere (components may refine it). */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The focused <main> (after the skip link) needs no ring around the whole page. */
+main:focus {
+  outline: none;
+}
+
+/* People who asked for less motion get no animations or smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
