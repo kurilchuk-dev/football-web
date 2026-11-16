@@ -1,0 +1,27 @@
+.notice {
+  margin: 0 0 12px;
+  padding: 10px 16px;
+  border: 1px dashed var(--accent);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.notice strong {
+  color: var(--text);
+}
+
+.summary {
+  margin: 0 0 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.summary strong {
+  font-weight: 800;
+}
