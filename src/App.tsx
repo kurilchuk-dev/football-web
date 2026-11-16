@@ -3,18 +3,13 @@ import { Route, Routes } from 'react-router-dom';
 import { Layout } from '@/components/Layout/Layout';
 import { HomePage } from '@/pages/HomePage/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage/NotFoundPage';
+import { loadMatchesPage, loadStandingsPage, loadTeamPage } from '@/routes';
 
 // The home page is what most visitors land on, so it stays in the main bundle.
 // The other pages are downloaded when they are opened.
-const MatchesPage = lazy(() =>
-  import('@/pages/MatchesPage/MatchesPage').then((m) => ({ default: m.MatchesPage })),
-);
-const StandingsPage = lazy(() =>
-  import('@/pages/StandingsPage/StandingsPage').then((m) => ({ default: m.StandingsPage })),
-);
-const TeamPage = lazy(() =>
-  import('@/pages/TeamPage/TeamPage').then((m) => ({ default: m.TeamPage })),
-);
+const MatchesPage = lazy(loadMatchesPage);
+const StandingsPage = lazy(loadStandingsPage);
+const TeamPage = lazy(loadTeamPage);
 
 export default function App() {
   return (

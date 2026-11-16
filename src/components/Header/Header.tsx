@@ -1,6 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LOGO_WIDTH, optimizeImage } from '@/api/image';
+import { prefetchRoute } from '@/api/prefetch';
 import { useOurTeam } from '@/features/teams/api';
 import styles from './Header.module.css';
 import { ThemeToggle } from './ThemeToggle';
@@ -15,6 +17,7 @@ const links = [
 
 export function Header() {
   const { data: team } = useOurTeam();
+  const queryClient = useQueryClient();
   const name = team?.name ?? 'ФК';
   const logo = team?.logo;
   const [failedLogo, setFailedLogo] = useState<string | null>(null);
@@ -52,6 +55,8 @@ export function Header() {
               key={to}
               to={to}
               end
+              onPointerEnter={() => void prefetchRoute(queryClient, to)}
+              onFocus={() => void prefetchRoute(queryClient, to)}
               className={({ isActive }) =>
                 isActive ? `${styles.link} ${styles.active}` : styles.link
               }

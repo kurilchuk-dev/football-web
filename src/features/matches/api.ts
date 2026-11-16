@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { apiGet } from '@/api/client';
 import { ENDPOINTS } from '@/api/endpoints';
 import type { Match } from '@/api/types';
@@ -9,17 +9,23 @@ function teamQuery(teamId?: number) {
 }
 
 /** Played matches, newest first. */
-export function useResults(teamId?: number) {
-  return useQuery({
+export const resultsQuery = (teamId?: number) =>
+  queryOptions({
     queryKey: ['matches', 'results', teamId ?? 'all'],
     queryFn: () => apiGet<Match[]>(`${ENDPOINTS.results}${teamQuery(teamId)}`),
   });
-}
 
 /** Matches that are not played yet, soonest first. */
-export function useUpcoming(teamId?: number) {
-  return useQuery({
+export const upcomingQuery = (teamId?: number) =>
+  queryOptions({
     queryKey: ['matches', 'upcoming', teamId ?? 'all'],
     queryFn: () => apiGet<Match[]>(`${ENDPOINTS.upcoming}${teamQuery(teamId)}`),
   });
+
+export function useResults(teamId?: number) {
+  return useQuery(resultsQuery(teamId));
+}
+
+export function useUpcoming(teamId?: number) {
+  return useQuery(upcomingQuery(teamId));
 }
