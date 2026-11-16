@@ -23,3 +23,28 @@ export function socialImage(siteUrl: string | undefined): Plugin {
     },
   };
 }
+
+/**
+ * robots.txt always (otherwise Cloudflare Pages answers /robots.txt with index.html),
+ * and sitemap.xml when VITE_SITE_URL is known, since sitemap addresses must be absolute.
+ */
+export function crawlerFiles(siteUrl: string | undefined, routes: string[]): Plugin {
+  return {
+    name: 'crawler-files',
+    apply: 'build',
+    generateBundle() {
+      const base = siteUrl && trimSlash(siteUrl);
+      const robots = ['User-agent: *', 'Allow: /'];
+      if (base) robots.push('', `Sitemap: ${base}/sitemap.xml`);
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `${robots.join('\n')}\n` });
+
+      if (!base) return;
+      const urls = routes.map((route) => `  <url><loc>${base}${route}</loc></url>`).join('\n');
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+      });
+    },
+  };
+}
