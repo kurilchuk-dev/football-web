@@ -37,7 +37,7 @@
 
 .active,
 .active:hover {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: var(--on-accent);
 }
 
@@ -52,7 +52,7 @@
 }
 .active .count {
   background: var(--on-accent);
-  color: var(--accent);
+  color: var(--accent-fill);
 }
 
 @media (min-width: 768px) {
