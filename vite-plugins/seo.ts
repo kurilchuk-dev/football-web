@@ -48,3 +48,33 @@ export function crawlerFiles(siteUrl: string | undefined, routes: string[]): Plu
     },
   };
 }
+
+/**
+ * schema.org markup so search engines know the site is a football team's.
+ * Needs the absolute site address, so it is skipped without VITE_SITE_URL.
+ */
+export function structuredData(siteUrl: string | undefined): Plugin {
+  return {
+    name: 'structured-data',
+    apply: 'build',
+    transformIndexHtml() {
+      if (!siteUrl) return;
+      // Fixed text without "<", so it is safe to put inside a script element as it is.
+      const data = {
+        '@context': 'https://schema.org',
+        '@type': 'SportsTeam',
+        name: 'Черкаси ФАМ',
+        sport: 'Soccer',
+        url: trimSlash(siteUrl),
+      };
+      return [
+        {
+          tag: 'script',
+          attrs: { type: 'application/ld+json' },
+          children: JSON.stringify(data),
+          injectTo: 'head' as const,
+        },
+      ];
+    },
+  };
+}
