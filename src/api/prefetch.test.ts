@@ -8,8 +8,9 @@ afterEach(() => vi.unstubAllGlobals());
 function setup() {
   const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => [] });
   vi.stubGlobal('fetch', fetchMock);
-  const requested = () =>
-    fetchMock.mock.calls.map(([url]) => String(url).replace('undefined', '')).sort();
+  // The base URL differs per environment (unset in CI, a local server in .env), so drop it.
+  const base = String(import.meta.env.VITE_API_URL);
+  const requested = () => fetchMock.mock.calls.map(([url]) => String(url).replace(base, '')).sort();
   return { client: new QueryClient(), requested };
 }
 
