@@ -40,7 +40,7 @@ export function MatchesPage() {
       {tab === 'results' ? (
         <MatchList matches={results.data} emptyText="Зіграних матчів поки немає" />
       ) : (
-        <MatchList matches={upcoming.data} emptyText="Найближчих матчів поки немає" />
+        <MatchList matches={upcoming.data} emptyText="Найближчих матчів поки немає" announce />
       )}
     </>
   );

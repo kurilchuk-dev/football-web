@@ -10,16 +10,19 @@ import {
   hasTime,
   isPlayed,
 } from '../../utils';
+import { AnnounceButton } from '../MatchAnnouncement/AnnounceButton';
 import styles from './MatchCard.module.css';
 
 interface MatchCardProps {
   match: Match;
   /** Show the date next to the time (used inside rounds that span several days). */
   showDate?: boolean;
+  /** Offer the announcement picture of the match (shown only while it is still to be played). */
+  announce?: boolean;
 }
 
 /** One match as a dense scoreboard row (livescore style). */
-export function MatchCard({ match, showDate = false }: MatchCardProps) {
+export function MatchCard({ match, showDate = false, announce = false }: MatchCardProps) {
   const { home_team: home, away_team: away } = match;
   const ours = home.is_our_team || away.is_our_team;
   const played = isPlayed(match);
@@ -52,6 +55,7 @@ export function MatchCard({ match, showDate = false }: MatchCardProps) {
           ) : (
             <span className={styles.tbd}>{DATE_TBD}</span>
           )}
+          {announce && !played && <AnnounceButton match={match} />}
         </div>
       </div>
 
