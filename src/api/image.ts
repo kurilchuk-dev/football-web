@@ -1,6 +1,8 @@
 /** Widths (in px) to request; about twice the largest size the image is shown at (retina). */
 export const LOGO_WIDTH = 176;
 export const PHOTO_WIDTH = 480;
+/** The team photo is shown large, up to the screen width. */
+export const TEAM_PHOTO_WIDTH = 1200;
 /** The accent color is read from a 48px canvas, so a tiny copy is enough. */
 export const ACCENT_SAMPLE_WIDTH = 96;
 

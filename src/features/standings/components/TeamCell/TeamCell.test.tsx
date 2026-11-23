@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import type { StandingRow } from '@/api/types';
 import { TeamCell } from './TeamCell';
 
-const team = (logo: string | null) =>
-  ({ id: 1, name: 'Динамо', is_our_team: false, logo }) as StandingRow['team'];
+const team = (logo: string | null, photo: string | null = null) =>
+  ({ id: 1, name: 'Динамо', is_our_team: false, logo, photo }) as StandingRow['team'];
 
 describe('TeamCell', () => {
   it('shows the logo image when the team has one', () => {
@@ -37,5 +37,30 @@ describe('TeamCell', () => {
 
     rerender(<TeamCell team={team('http://x/media/new.png')} />);
     expect(container.querySelector('img')).toHaveAttribute('src', 'http://x/media/new.png');
+  });
+
+  it('is not pressable when the team has no photo', () => {
+    render(<TeamCell team={team(null)} />);
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+
+  it('opens the team photo on a tap and closes it again', () => {
+    render(<TeamCell team={team(null, 'http://x/media/team.jpg')} />);
+    expect(screen.queryByRole('dialog')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: /фото команди/ }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByAltText('Команда Динамо')).toHaveAttribute('src', 'http://x/media/team.jpg');
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('does not open the photo when the press was a scroll', () => {
+    render(<TeamCell team={team(null, 'http://x/media/team.jpg')} />);
+    const button = screen.getByRole('button', { name: /фото команди/ });
+    fireEvent.pointerDown(button, { clientX: 10, clientY: 10 });
+    fireEvent.click(button, { clientX: 10, clientY: 90 });
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 });
