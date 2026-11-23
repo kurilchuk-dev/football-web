@@ -2,10 +2,10 @@ import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persist
 import { PERSIST_STORAGE_KEY } from './config';
 
 /** How long a saved copy may be shown. Must not exceed the query cache's gcTime. */
-export const PERSIST_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+export const PERSIST_MAX_AGE_MS = 6 * 60 * 60 * 1000;
 
 /** Change it when the shape of the API responses changes, so old saved data is dropped. */
-export const PERSIST_BUSTER = 'v1';
+export const PERSIST_BUSTER = 'v2';
 
 function safeStorage(): Storage | undefined {
   try {
