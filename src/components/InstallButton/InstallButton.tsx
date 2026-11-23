@@ -31,8 +31,9 @@ export function InstallButton() {
       {state === 'ios' && help && (
         <div className={styles.help} role="dialog" aria-label="Як встановити застосунок">
           <p>
-            Натисніть <strong>«Поділитись»</strong> внизу екрана Safari, потім{' '}
-            <strong>«На екран “Додому”»</strong>.
+            У Safari натисніть <strong>«Поділитися»</strong>, прокрутіть вниз і виберіть{' '}
+            <strong>«На початковий екран»</strong>, потім <strong>«Додати»</strong>. Якщо кнопки
+            «Поділитися» не видно, відкрийте меню <strong>«···»</strong>.
           </p>
           <button type="button" className={styles.close} onClick={() => setHelp(false)}>
             Зрозуміло
