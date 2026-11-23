@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+export const API_URL = import.meta.env.VITE_API_URL;
 
 /**
  * A free-tier server can need about a minute to wake up, but a request must not hang forever
