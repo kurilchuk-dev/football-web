@@ -59,7 +59,7 @@ export function NextMatchCard() {
       </div>
 
       {hasDate(match) ? (
-        <div className={styles.panel}>
+        <>
           <p className={styles.when}>
             <span className={styles.day}>{formatDayHeading(match.date)}</span>
             {hasTime(match) && <span className={styles.time}>{formatMatchTime(match.time)}</span>}
@@ -70,13 +70,11 @@ export function NextMatchCard() {
           ) : (
             <p className={styles.tbd}>Час ще не визначений</p>
           )}
-        </div>
+        </>
       ) : (
-        <div className={styles.panel}>
-          <p className={styles.when}>
-            <span className={styles.day}>Дата і час ще не визначені</span>
-          </p>
-        </div>
+        <p className={styles.when}>
+          <span className={styles.day}>Дата і час ще не визначені</span>
+        </p>
       )}
 
       <Link to="/matches?tab=calendar" className={styles.link}>

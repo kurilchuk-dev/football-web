@@ -13,8 +13,7 @@
   /* Self-hosted variable fonts (imported in main.tsx), so no third-party request blocks rendering. */
   --font-body: 'Manrope Variable', system-ui, sans-serif;
   --font-display: 'Unbounded Variable', sans-serif;
-  --radius: 18px;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.25), 0 8px 24px rgb(0 0 0 / 0.18);
+  --radius: 24px;
 }
 
 * {
@@ -40,7 +39,6 @@ a {
   --border: #d9e0db;
   --text: #121814;
   --muted: #5f6b64;
-  --shadow: 0 1px 2px rgb(16 24 40 / 0.06), 0 8px 24px rgb(16 24 40 / 0.08);
 }
 
 /* A visible keyboard focus ring everywhere (components may refine it). */

@@ -6,13 +6,11 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
 }
 
 .skeleton {
   min-height: 160px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
 }
 
 .eyebrow {
