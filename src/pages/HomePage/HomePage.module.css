@@ -1,3 +1,18 @@
+.page {
+  /* Home cards have no rounded corners: two opposite corners are cut off diagonally instead. */
+  --radius: 0;
+  --radius-inner: 0;
+  --cut: 20px;
+  --cut-shape: polygon(
+    var(--cut) 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%,
+    0 var(--cut)
+  );
+}
+
 .hero {
   display: grid;
   gap: 16px;
