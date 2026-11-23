@@ -9,12 +9,16 @@ import { createQueryClient } from './api/queryClient';
 import App from './App';
 import { applyStoredAccent } from './features/theme/apply';
 import { installPreloadErrorReload } from './features/update/reload';
+import { reportVisitWhenIdle } from './features/visitors/trackVisit';
 
 // Club color from the previous visit, applied before the first paint.
 applyStoredAccent();
 
 // A page left open across a release recovers by reloading instead of showing a blank screen.
 installPreloadErrorReload();
+
+// Counts the visitor (once per session, when the browser is idle) for the admin statistics.
+reportVisitWhenIdle();
 
 const queryClient = createQueryClient();
 const persister = createPersister();
