@@ -11,7 +11,9 @@ import styles from './NextMatchCard.module.css';
 function Side({ team }: { team: Team }) {
   return (
     <div className={`${styles.team} ${team.is_our_team ? styles.ours : ''}`}>
-      <TeamLogo name={team.name} logo={team.logo} ours={team.is_our_team} />
+      <span className={styles.logoWrap}>
+        <TeamLogo name={team.name} logo={team.logo} ours={team.is_our_team} />
+      </span>
       <span className={styles.name}>{team.name}</span>
     </div>
   );
@@ -50,7 +52,10 @@ export function NextMatchCard() {
         </span>
       )}
 
-      <p className={styles.eyebrow}>Наступний матч{hasRound ? ` · Тур ${match.round}` : ''}</p>
+      <div className={styles.head}>
+        <p className={styles.eyebrow}>Наступний матч</p>
+        {hasRound && <span className={styles.round}>Тур {match.round}</span>}
+      </div>
 
       <div className={styles.teams}>
         <Side team={match.home_team} />
@@ -59,7 +64,7 @@ export function NextMatchCard() {
       </div>
 
       {hasDate(match) ? (
-        <>
+        <div className={styles.panel}>
           <p className={styles.when}>
             <span className={styles.day}>{formatDayHeading(match.date)}</span>
             {hasTime(match) && <span className={styles.time}>{formatMatchTime(match.time)}</span>}
@@ -70,11 +75,13 @@ export function NextMatchCard() {
           ) : (
             <p className={styles.tbd}>Час ще не визначений</p>
           )}
-        </>
+        </div>
       ) : (
-        <p className={styles.when}>
-          <span className={styles.day}>Дата і час ще не визначені</span>
-        </p>
+        <div className={styles.panel}>
+          <p className={styles.when}>
+            <span className={styles.day}>Дата і час ще не визначені</span>
+          </p>
+        </div>
       )}
 
       <Link to="/matches?tab=calendar" className={styles.link}>
