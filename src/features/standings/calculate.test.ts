@@ -7,6 +7,7 @@ const team = (id: number, name: string, is_our_team = false): EngineTeam => ({
   name,
   is_our_team,
   logo: null,
+  photo: null,
 });
 
 let nextId = 1;
@@ -93,7 +94,7 @@ describe('parity with the server calculation', () => {
   it('has seasons that really need the head-to-head rule (the fixtures are not trivial)', () => {
     const needsHeadToHead = fixtures.filter((season) => {
       const played = season.matches.filter((m) => m.home_score !== null) as EngineMatch[];
-      const rows = calculateStandings(season.teams, played);
+      const rows = calculateStandings(season.teams as EngineTeam[], played);
       const simple = [...rows].sort(
         (a, b) =>
           b.points - a.points ||
@@ -112,6 +113,6 @@ describe('parity with the server calculation', () => {
       (m) => m.home_score !== null && m.away_score !== null,
     ) as EngineMatch[];
 
-    expect(calculateStandings(season.teams, played)).toEqual(season.expected);
+    expect(calculateStandings(season.teams as EngineTeam[], played)).toEqual(season.expected);
   });
 });

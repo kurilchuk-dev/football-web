@@ -260,6 +260,8 @@ export interface components {
       is_our_team: boolean;
       /** Format: uri */
       readonly logo: string | null;
+      /** Format: uri */
+      readonly photo: string | null;
     };
     Team: {
       readonly id: number;
@@ -268,6 +270,8 @@ export interface components {
       is_our_team?: boolean;
       /** Format: uri */
       logo?: string | null;
+      /** Format: uri */
+      photo?: string | null;
     };
   };
   responses: never;

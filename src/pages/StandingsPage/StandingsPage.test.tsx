@@ -6,9 +6,9 @@ import { calculateStandings, type EngineTeam } from '@/features/standings/calcul
 import { StandingsPage } from './StandingsPage';
 
 const teams: EngineTeam[] = [
-  { id: 1, name: 'Наші', is_our_team: true, logo: null },
-  { id: 2, name: 'Барс', is_our_team: false, logo: null },
-  { id: 3, name: 'Темп', is_our_team: false, logo: null },
+  { id: 1, name: 'Наші', is_our_team: true, logo: null, photo: null },
+  { id: 2, name: 'Барс', is_our_team: false, logo: null, photo: null },
+  { id: 3, name: 'Темп', is_our_team: false, logo: null, photo: null },
 ];
 
 const game = (id: number, home: number, away: number, scores: [number, number] | null): Match =>
