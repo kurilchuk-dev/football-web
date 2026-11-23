@@ -14,7 +14,7 @@ import styles from './HomePage.module.css';
 export function HomePage() {
   usePageMeta();
   return (
-    <>
+    <div className={styles.page}>
       <div className={styles.hero}>
         <Reveal className={styles.cell}>
           <NextMatchCard />
@@ -29,6 +29,6 @@ export function HomePage() {
 
       <RecentResults />
       <MiniStandings />
-    </>
+    </div>
   );
 }

@@ -16,7 +16,7 @@
     color-mix(in srgb, var(--text) 2%, transparent)
   );
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-inner);
 }
 
 .value {
@@ -43,7 +43,7 @@
   margin: 0;
   padding: 14px;
   border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
-  border-radius: 16px;
+  border-radius: var(--radius-inner);
   background: color-mix(in srgb, var(--accent) 14%, transparent);
   color: var(--text);
   font-weight: 800;
