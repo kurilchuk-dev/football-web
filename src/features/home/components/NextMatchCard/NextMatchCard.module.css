@@ -127,6 +127,10 @@
 .logoWrap > * {
   position: relative;
 }
+/* The crest is big here: a round clip would cut the corners of shield-shaped logos (Cherkasy). */
+.logoWrap > img {
+  border-radius: 0;
+}
 
 .name {
   max-width: 100%;

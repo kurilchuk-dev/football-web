@@ -21,7 +21,7 @@ describe('InstallButton', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
 
     await userEvent.click(button);
-    expect(screen.getByRole('dialog').textContent).toContain('Поділитись');
+    expect(screen.getByRole('dialog').textContent).toContain('Поділитися');
 
     await userEvent.click(screen.getByRole('button', { name: 'Зрозуміло' }));
     expect(screen.queryByRole('dialog')).toBeNull();

@@ -36,10 +36,18 @@ function preconnect(apiUrl: string | undefined): Plugin {
 // Pages that should be in the sitemap (keep in sync with the routes in src/App.tsx).
 const SITE_ROUTES = ['/', '/matches', '/standings', '/team'];
 
+/**
+ * Identifies this build. It is the persisted-cache buster, so every release drops the data that
+ * the previous version saved in localStorage. Cloudflare Pages gives the commit hash; elsewhere
+ * (a local build) the build time does the same job.
+ */
+const BUILD_ID = (process.env.CF_PAGES_COMMIT_SHA ?? Date.now().toString(36)).slice(0, 12);
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
   return {
+    define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
     plugins: [
       react(),
       preconnect(env.VITE_API_URL),
@@ -48,6 +56,7 @@ export default defineConfig(({ mode }) => {
         routes: ROUTE_PRELOADS,
         freshMs: STALE_TIME_MS,
         storageKey: PERSIST_STORAGE_KEY,
+        buster: BUILD_ID,
       }),
       socialImage(env.VITE_SITE_URL),
       structuredData(env.VITE_SITE_URL),

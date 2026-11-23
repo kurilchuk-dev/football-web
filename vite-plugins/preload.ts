@@ -8,6 +8,8 @@ export interface PreloadOptions {
   freshMs: number;
   /** localStorage key of the saved query cache. */
   storageKey: string;
+  /** Build id the saved cache must carry to count as usable (a cache of another build is dropped). */
+  buster?: string;
 }
 
 /**
@@ -16,12 +18,19 @@ export interface PreloadOptions {
  * fetch() then takes the already running request. Skipped when the saved cache is still fresh,
  * because then the app makes no request and the preloaded response would be wasted.
  */
-export function preloadScript({ apiUrl, routes, freshMs, storageKey }: PreloadOptions): string {
+export function preloadScript({
+  apiUrl,
+  routes,
+  freshMs,
+  storageKey,
+  buster,
+}: PreloadOptions): string {
   const base = apiUrl.replace(/\/+$/, '');
   return `(function(){try{
 var saved=localStorage.getItem(${JSON.stringify(storageKey)});
 var at=saved?saved.indexOf('"timestamp":'):-1;
-if(at>=0&&Date.now()-parseInt(saved.slice(at+12),10)<${freshMs})return;
+var usable=${buster === undefined ? 'true' : `saved.indexOf(${JSON.stringify(`"buster":${JSON.stringify(buster)}`)})>=0`};
+if(usable&&at>=0&&Date.now()-parseInt(saved.slice(at+12),10)<${freshMs})return;
 var path=location.pathname;
 while(path.length>1&&path.charAt(path.length-1)==='/')path=path.slice(0,-1);
 var list=${JSON.stringify(routes)}[path];

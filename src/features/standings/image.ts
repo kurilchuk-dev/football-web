@@ -1,5 +1,16 @@
-import { LOGO_WIDTH, optimizeImage } from '@/api/image';
+import { LOGO_WIDTH } from '@/api/image';
 import type { StandingRow } from '@/api/types';
+import {
+  BODY_FONT,
+  DISPLAY_FONT,
+  PALETTE,
+  drawLinkPill,
+  ellipsize,
+  loadImage,
+  readAccent,
+  roundedRectPath,
+  toBlob,
+} from '@/lib/canvas';
 import { LEAGUE_NAME, PODIUM_PLACES } from './constants';
 
 /** Layout in CSS pixels; the canvas is drawn at SCALE times that for a sharp picture. */
@@ -16,20 +27,7 @@ const COLUMNS = { played: 650, won: 716, drawn: 776, lost: 836, goals: 930, poin
 const NAME_LEFT = 196;
 const NAME_RIGHT = 600;
 
-const LOGO_TIMEOUT_MS = 8000;
 const MEDALS = ['#f5c542', '#c4cbd3', '#cd7f32'];
-
-/** The picture always uses the dark palette, whatever theme the visitor has chosen. */
-const PALETTE = {
-  bg: '#0b0f0d',
-  surface: '#111814',
-  border: '#223029',
-  text: '#f2f5f0',
-  muted: '#9aa59e',
-};
-
-const BODY_FONT = '"Manrope Variable", system-ui, sans-serif';
-const DISPLAY_FONT = '"Unbounded Variable", sans-serif';
 
 export interface StandingsImageOptions {
   /** "станом на 16 листопада 2026 р." */
@@ -49,56 +47,15 @@ export function imageFileName(now = new Date()): string {
   return `turnirna-tablytsia-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}.png`;
 }
 
+export { ellipsize };
+
 /** "+3", "0", "-2" */
 export function formatGoalDifference(value: number): string {
   return value > 0 ? `+${value}` : String(value);
 }
 
-/** Cuts the text and adds "…" until it fits `maxWidth` (measured by the given function). */
-export function ellipsize(
-  text: string,
-  maxWidth: number,
-  measure: (text: string) => number,
-): string {
-  if (measure(text) <= maxWidth) return text;
-  let end = text.length;
-  while (end > 1 && measure(`${text.slice(0, end).trimEnd()}…`) > maxWidth) end--;
-  return `${text.slice(0, end).trimEnd()}…`;
-}
-
-/** Club colors come from the page itself (they are taken from the logo at runtime). */
-function readAccent() {
-  const style = getComputedStyle(document.documentElement);
-  const read = (name: string, fallback: string) => style.getPropertyValue(name).trim() || fallback;
-  const accent = read('--accent', '#ef3e39');
-  return {
-    accent,
-    fill: read('--accent-fill', accent),
-    onAccent: read('--on-accent', '#ffffff'),
-  };
-}
-
 /** Loads a team logo; resolves null when it cannot be loaded in time. */
-function loadLogo(url: string | null | undefined): Promise<HTMLImageElement | null> {
-  if (!url) return Promise.resolve(null);
-  return new Promise((resolve) => {
-    const image = new Image();
-    // Anonymous CORS, or the canvas could not be exported. A separate cache key, because a plain
-    // <img> may already have cached this URL without CORS headers.
-    image.crossOrigin = 'anonymous';
-    const small = optimizeImage(url, LOGO_WIDTH);
-    const timer = setTimeout(() => resolve(null), LOGO_TIMEOUT_MS);
-    image.onload = () => {
-      clearTimeout(timer);
-      resolve(image);
-    };
-    image.onerror = () => {
-      clearTimeout(timer);
-      resolve(null);
-    };
-    image.src = `${small}${small.includes('?') ? '&' : '?'}table`;
-  });
-}
+const loadLogo = (url: string | null | undefined) => loadImage(url, LOGO_WIDTH, 'table');
 
 async function waitForFonts() {
   if (!document.fonts) return;
@@ -176,11 +133,7 @@ function draw(
     // Row background: the club's own row is filled, the others get a thin separator.
     if (ours) {
       context.fillStyle = colors.fill;
-      context.beginPath();
-      const [x, y, w, h] = [PADDING - 20, top + 4, WIDTH - 2 * PADDING + 40, ROW_HEIGHT - 8];
-      // roundRect is missing in older browsers: a plain rectangle is fine there.
-      if (typeof context.roundRect === 'function') context.roundRect(x, y, w, h, 18);
-      else context.rect(x, y, w, h);
+      roundedRectPath(context, PADDING - 20, top + 4, WIDTH - 2 * PADDING + 40, ROW_HEIGHT - 8, 18);
       context.fill();
     } else {
       context.fillStyle = PALETTE.border;
@@ -238,69 +191,6 @@ function draw(
     text(String(row.lost), COLUMNS.lost, middle + 1, num, quiet, 'center');
     text(`${row.goals_for}:${row.goals_against}`, COLUMNS.goals, middle + 1, num, quiet, 'center');
     text(String(row.points), COLUMNS.points, middle + 1, `800 34px ${BODY_FONT}`, color, 'center');
-  });
-}
-
-interface LinkPillStyle {
-  size: number;
-  fill: string;
-  color: string;
-  maxWidth: number;
-  /** `center`: x is the middle of the pill, `right`: x is its right edge. */
-  align: 'center' | 'right';
-  border?: string;
-}
-
-/** A rounded badge with the site address; the text shrinks if it would not fit `maxWidth`. */
-function drawLinkPill(
-  context: CanvasRenderingContext2D,
-  label: string,
-  x: number,
-  centerY: number,
-  { size, fill, color, maxWidth, align, border }: LinkPillStyle,
-) {
-  const padX = Math.round(size * 0.9);
-  const padY = Math.round(size * 0.55);
-  let fontSize = size;
-  let textWidth = 0;
-  for (; fontSize >= 16; fontSize -= 2) {
-    context.font = `800 ${fontSize}px ${BODY_FONT}`;
-    textWidth = context.measureText(label).width;
-    if (textWidth + 2 * padX <= maxWidth) break;
-  }
-  const width = textWidth + 2 * padX;
-  const height = fontSize + 2 * padY;
-  const left = align === 'center' ? x - width / 2 : x - width;
-  const top = centerY - height / 2;
-
-  context.beginPath();
-  if (typeof context.roundRect === 'function')
-    context.roundRect(left, top, width, height, height / 2);
-  else context.rect(left, top, width, height);
-  context.fillStyle = fill;
-  context.fill();
-  if (border) {
-    context.strokeStyle = border;
-    context.lineWidth = 2;
-    context.stroke();
-  }
-
-  context.fillStyle = color;
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.fillText(label, left + width / 2, centerY + 1);
-}
-
-function toBlob(canvas: HTMLCanvasElement): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    try {
-      canvas.toBlob(
-        (blob) => (blob ? resolve(blob) : reject(new Error('empty image'))),
-        'image/png',
-      );
-    } catch (error) {
-      reject(error);
-    }
   });
 }
 
