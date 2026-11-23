@@ -7,10 +7,12 @@ interface MatchListProps {
   matches: Match[];
   /** Shown when there are no matches. */
   emptyText: string;
+  /** Each match still to be played gets a button for its announcement picture. */
+  announce?: boolean;
 }
 
 /** Matches grouped by round (or by day when there is no round), each group under a heading. */
-export function MatchList({ matches, emptyText }: MatchListProps) {
+export function MatchList({ matches, emptyText, announce = false }: MatchListProps) {
   if (matches.length === 0) return <p className={styles.empty}>{emptyText}</p>;
 
   return (
@@ -23,7 +25,12 @@ export function MatchList({ matches, emptyText }: MatchListProps) {
           </h2>
           <div className={styles.list}>
             {group.matches.map((match) => (
-              <MatchCard key={match.id} match={match} showDate={group.showDate} />
+              <MatchCard
+                key={match.id}
+                match={match}
+                showDate={group.showDate}
+                announce={announce}
+              />
             ))}
           </div>
         </section>
