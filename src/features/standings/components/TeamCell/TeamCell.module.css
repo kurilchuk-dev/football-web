@@ -17,3 +17,29 @@
     --logo-size: 40px;
   }
 }
+
+/* A team with a photo: the whole cell is a button, styled like the plain one. */
+.pressable {
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* No double-tap zoom delay, and no grey flash when a finger brushes it. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.pressable:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+@media (hover: hover) {
+  .pressable:hover .name {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
