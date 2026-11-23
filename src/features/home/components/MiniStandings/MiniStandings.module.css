@@ -1,4 +1,5 @@
 .skeleton {
   min-height: 330px;
   border-radius: var(--radius);
+  clip-path: var(--cut-shape);
 }
