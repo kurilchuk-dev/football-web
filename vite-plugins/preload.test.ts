@@ -48,6 +48,18 @@ describe('preloadScript', () => {
     expect(hrefs()).toEqual([]);
   });
 
+  it('preloads when the fresh saved data belongs to another build', () => {
+    const saved = JSON.stringify({ buster: 'old', timestamp: Date.now() });
+    localStorage.setItem('cache', saved);
+    new Function(preloadScript({ ...options, buster: 'new' }))();
+    expect(hrefs()).toHaveLength(2);
+
+    document.head.innerHTML = '';
+    localStorage.setItem('cache', JSON.stringify({ buster: 'new', timestamp: Date.now() }));
+    new Function(preloadScript({ ...options, buster: 'new' }))();
+    expect(hrefs()).toEqual([]);
+  });
+
   it('preloads when the saved data is old or unreadable', () => {
     localStorage.setItem('cache', JSON.stringify({ timestamp: Date.now() - 10 * 60_000 }));
     run();
