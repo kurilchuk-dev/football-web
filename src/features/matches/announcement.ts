@@ -1,4 +1,4 @@
-import { LOGO_WIDTH, TEAM_PHOTO_WIDTH } from '@/api/image';
+import { LOGO_WIDTH } from '@/api/image';
 import type { Match } from '@/api/types';
 import {
   BODY_FONT,
@@ -18,43 +18,21 @@ const WIDTH = 1080;
 const HEIGHT = 1350;
 const SCALE = 2;
 const PADDING = 56;
-/** The two team photos sit side by side, split by a thin line in the middle. */
-const SPLIT_X = WIDTH / 2;
-const SPLIT_GAP = 4;
-const LOGO_CENTERS = [250, 830] as const;
+const LOGO_CENTERS = [240, 840] as const;
 /** The center circle of the pitch, with "VS" inside. */
 const CENTER_RADIUS = 122;
-/** The photo band: below the header, so the title does not cover the heads. */
-const PHOTO_TOP = 165;
 
 interface Layout {
-  /** At least one team has a photo: the photo stage is shown and the crests sit on its lower edge. */
-  photos: boolean;
-  /** Height of the photo stage (0 without photos). */
-  stage: number;
   /** Vertical middle of the crests. */
   logoY: number;
-  /** The crest is fitted into this square inside the plate. */
+  /** The crest is fitted into this square. */
   logoFit: number;
   /** Vertical middle of the team names. */
   nameY: number;
 }
 
-/** With photos the top part is given to them. Without any photo no room is kept for them. */
-const WITH_PHOTOS: Layout = {
-  photos: true,
-  stage: 525,
-  logoY: 705,
-  logoFit: 220,
-  nameY: 858,
-};
-const WITHOUT_PHOTOS: Layout = {
-  photos: false,
-  stage: 0,
-  logoY: 520,
-  logoFit: 310,
-  nameY: 785,
-};
+/** Big crests at the top, the team names under them. */
+const LAYOUT: Layout = { logoY: 515, logoFit: 320, nameY: 785 };
 
 const hasPicture = (image: HTMLImageElement | null) => Boolean(image && image.naturalWidth > 0);
 
@@ -159,100 +137,6 @@ function cutPath(context: Context, x: number, y: number, w: number, h: number, c
   context.lineTo(x, y + h);
   context.lineTo(x, y + cut);
   context.closePath();
-}
-
-/**
- * Draws the picture so that it covers the box completely (the overflow is cropped).
- * `focusY` is which part of the cropped height stays: 0 the top, 0.5 the middle, 1 the bottom.
- */
-function drawCover(
-  context: Context,
-  image: HTMLImageElement,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  focusY = 0.5,
-) {
-  const ratio = Math.max(w / image.naturalWidth, h / image.naturalHeight);
-  const drawWidth = image.naturalWidth * ratio;
-  const drawHeight = image.naturalHeight * ratio;
-  context.drawImage(
-    image,
-    x + (w - drawWidth) / 2,
-    y + (h - drawHeight) * focusY,
-    drawWidth,
-    drawHeight,
-  );
-}
-
-/** Alternating light and dark bands, like the stripes of a freshly mown pitch. */
-function drawStripes(context: Context, top: number, height: number) {
-  context.fillStyle = PALETTE.surface;
-  context.fillRect(0, top, WIDTH, height);
-  context.fillStyle = 'rgba(255,255,255,0.028)';
-  for (let x = 0; x < WIDTH; x += 180) context.fillRect(x, top, 90, height);
-}
-
-/** The picture blurred to fill the box (shrinking it and stretching it back is a cheap blur). */
-function drawBlurredFill(
-  context: Context,
-  image: HTMLImageElement,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-) {
-  const small = document.createElement('canvas');
-  small.width = 36;
-  small.height = Math.max(1, Math.round((36 * h) / w));
-  const smallContext = small.getContext('2d');
-  if (!smallContext) return;
-  drawCover(smallContext, image, 0, 0, small.width, small.height);
-  context.save();
-  context.imageSmoothingEnabled = true;
-  context.imageSmoothingQuality = 'high';
-  context.drawImage(small, x, y, w, h);
-  context.fillStyle = 'rgba(11,15,13,0.45)';
-  context.fillRect(x, y, w, h);
-  context.restore();
-}
-
-/**
- * One team photo in its half of the band. The whole photo is shown, whatever its proportions:
- * it is fitted into the box and the leftover space is filled with a blurred copy of itself.
- */
-function drawHalf(
-  context: Context,
-  side: 'home' | 'away',
-  photo: HTMLImageElement | null,
-  stage: number,
-) {
-  const x = side === 'home' ? 0 : SPLIT_X + SPLIT_GAP / 2;
-  const w = SPLIT_X - SPLIT_GAP / 2;
-  const y = PHOTO_TOP;
-  const h = stage - PHOTO_TOP;
-  context.save();
-  context.beginPath();
-  context.rect(x, y, w, h);
-  context.clip();
-  if (photo && hasPicture(photo)) {
-    drawBlurredFill(context, photo, x, y, w, h);
-    const ratio = Math.min(w / photo.naturalWidth, h / photo.naturalHeight);
-    const drawWidth = photo.naturalWidth * ratio;
-    const drawHeight = photo.naturalHeight * ratio;
-    context.drawImage(
-      photo,
-      x + (w - drawWidth) / 2,
-      y + (h - drawHeight) / 2,
-      drawWidth,
-      drawHeight,
-    );
-  } else {
-    // This team has no photo: quiet stripes, the other half keeps its photo.
-    drawStripes(context, y, h);
-  }
-  context.restore();
 }
 
 /** Two soft beams of light from the top corners, like stadium floodlights. */
@@ -366,7 +250,7 @@ export function dominantTint(image: HTMLImageElement | null): string | null {
  */
 function drawStadium(context: Context, tints: [string, string], layout: Layout) {
   const bottom = CARD.y;
-  const horizon = layout.photos ? 470 : 300;
+  const horizon = 300;
   const [left, right] = tints;
 
   // The dark night.
@@ -505,56 +389,26 @@ function drawBall(context: Context, cx: number, cy: number, radius: number) {
   context.restore();
 }
 
-function drawBackground(
-  context: Context,
-  photos: Pictures,
-  colors: Colors,
-  layout: Layout,
-  tints: [string, string],
-) {
-  const { stage, logoY } = layout;
+function drawBackground(context: Context, colors: Colors, layout: Layout, tints: [string, string]) {
   context.fillStyle = PALETTE.bg;
   context.fillRect(0, 0, WIDTH, HEIGHT);
   drawStadium(context, tints, layout);
   drawFloodlights(context);
 
-  if (layout.photos) {
-    drawStripes(context, 0, PHOTO_TOP);
-    drawHalf(context, 'home', photos[0], stage);
-    drawHalf(context, 'away', photos[1], stage);
-
-    // A short fade at the bottom edge of the band; the photos themselves stay untouched.
-    const fade = context.createLinearGradient(0, stage - 60, 0, stage + 24);
-    fade.addColorStop(0, withAlpha(PALETTE.bg, 0));
-    fade.addColorStop(1, PALETTE.bg);
-    context.fillStyle = fade;
-    context.fillRect(0, stage - 60, WIDTH, 84);
-
-    // A club-colored line between the two photos.
-    context.save();
-    context.shadowColor = colors.accent;
-    context.shadowBlur = 20;
-    context.fillStyle = colors.fill;
-    context.fillRect(SPLIT_X - SPLIT_GAP / 2, PHOTO_TOP, SPLIT_GAP, stage - PHOTO_TOP);
-    context.restore();
-  } else {
-    // No photos at all: the stadium takes the whole space, nothing is reserved for them.
-
-    // The top gets a shade for the header text.
-    const top = context.createLinearGradient(0, 0, 0, 260);
-    top.addColorStop(0, withAlpha(PALETTE.bg, 0.8));
-    top.addColorStop(1, withAlpha(PALETTE.bg, 0));
-    context.fillStyle = top;
-    context.fillRect(0, 0, WIDTH, 260);
-  }
+  // The top gets a shade for the header text.
+  const top = context.createLinearGradient(0, 0, 0, 260);
+  top.addColorStop(0, withAlpha(PALETTE.bg, 0.8));
+  top.addColorStop(1, withAlpha(PALETTE.bg, 0));
+  context.fillStyle = top;
+  context.fillRect(0, 0, WIDTH, 260);
 
   // A soft light behind both crests, like a spotlight.
   for (const x of LOGO_CENTERS) {
-    const glow = context.createRadialGradient(x, logoY, 0, x, logoY, 260);
+    const glow = context.createRadialGradient(x, layout.logoY, 0, x, layout.logoY, 260);
     glow.addColorStop(0, 'rgba(255,255,255,0.1)');
     glow.addColorStop(1, 'rgba(255,255,255,0)');
     context.fillStyle = glow;
-    context.fillRect(0, logoY - 300, WIDTH, 600);
+    context.fillRect(0, layout.logoY - 300, WIDTH, 600);
   }
 
   // A soft vignette: the edges are a little darker than the middle.
@@ -823,17 +677,17 @@ function drawFrame(context: Context, colors: Colors) {
 function draw(
   context: Context,
   match: Match,
-  images: { logos: Pictures; photos: Pictures; tints: (string | null)[] },
+  images: { logos: Pictures; tints: (string | null)[] },
   options: AnnouncementOptions,
 ) {
   const colors = readAccent();
-  const layout = images.photos.some(hasPicture) ? WITH_PHOTOS : WITHOUT_PHOTOS;
+  const layout = LAYOUT;
   // The team's own color; a crest with no clear color gets a neutral tone (our team: the club color).
   const tints: [string, string] = [
     images.tints[0] ?? (match.home_team.is_our_team ? colors.accent : NEUTRAL_TINT),
     images.tints[1] ?? (match.away_team.is_our_team ? colors.accent : NEUTRAL_TINT),
   ];
-  drawBackground(context, images.photos, colors, layout, tints);
+  drawBackground(context, colors, layout, tints);
   drawHeader(context, match, options, colors);
   drawCrest(context, match.home_team, images.logos[0], LOGO_CENTERS[0], colors, layout);
   drawCrest(context, match.away_team, images.logos[1], LOGO_CENTERS[1], colors, layout);
@@ -850,13 +704,12 @@ export async function renderAnnouncementImage(
 ): Promise<Blob> {
   await waitForFonts();
   const teams = [match.home_team, match.away_team];
-  const [logos, photos] = await Promise.all([
-    Promise.all(teams.map((team) => loadImage(team.logo, LOGO_WIDTH * 2, 'announce'))),
-    Promise.all(teams.map((team) => loadImage(team.photo, TEAM_PHOTO_WIDTH, 'announce'))),
-  ]);
+  const logos = await Promise.all(
+    teams.map((team) => loadImage(team.logo, LOGO_WIDTH * 2, 'announce')),
+  );
 
   const tints = logos.map(dominantTint);
-  const render = (images: { logos: Pictures; photos: Pictures; tints: (string | null)[] }) => {
+  const render = (images: { logos: Pictures; tints: (string | null)[] }) => {
     const canvas = document.createElement('canvas');
     canvas.width = WIDTH * SCALE;
     canvas.height = HEIGHT * SCALE;
@@ -868,13 +721,9 @@ export async function renderAnnouncementImage(
   };
 
   try {
-    return await render({ logos, photos, tints });
+    return await render({ logos, tints });
   } catch {
-    // An image without CORS headers makes the canvas unexportable: draw without the photos.
-    try {
-      return await render({ logos, photos: [null, null], tints });
-    } catch {
-      return render({ logos: [null, null], photos: [null, null], tints: [null, null] });
-    }
+    // A crest without CORS headers makes the canvas unexportable: draw the letters instead.
+    return render({ logos: [null, null], tints: [null, null] });
   }
 }
