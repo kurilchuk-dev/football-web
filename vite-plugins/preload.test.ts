@@ -48,6 +48,12 @@ describe('preloadScript', () => {
     expect(hrefs()).toEqual([]);
   });
 
+  it('preloads on the first visit, when nothing is saved yet', () => {
+    // The real build always passes a build id.
+    new Function(preloadScript({ ...options, buster: 'new' }))();
+    expect(hrefs()).toHaveLength(2);
+  });
+
   it('preloads when the fresh saved data belongs to another build', () => {
     const saved = JSON.stringify({ buster: 'old', timestamp: Date.now() });
     localStorage.setItem('cache', saved);

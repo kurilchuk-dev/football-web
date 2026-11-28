@@ -1,70 +1,62 @@
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { PageMeta } from '@/seo/pageMeta';
 import { usePageMeta } from './usePageMeta';
+
+const meta: PageMeta = { title: 'Матчі', description: 'List', path: '/matches' };
+const render = (value: PageMeta) =>
+  renderHook((props: PageMeta) => usePageMeta(props), { initialProps: value });
+const canonical = () => document.querySelector('link[rel="canonical"]')?.getAttribute('href');
+const content = (selector: string) => document.querySelector(selector)?.getAttribute('content');
 
 describe('usePageMeta', () => {
   beforeEach(() => {
     document.head.innerHTML = '<meta name="description" content="Default">';
-    document.title = 'Черкаси ФАМ';
   });
   afterEach(() => {
     document.head.innerHTML = '';
     vi.unstubAllEnvs();
-    history.pushState({}, '', '/');
   });
 
-  it('sets the title and description and restores them on unmount', () => {
-    const { unmount } = renderHook(() => usePageMeta({ title: 'Матчі', description: 'List' }));
-    expect(document.title).toBe('Матчі · Черкаси ФАМ');
-    expect(document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content).toBe(
-      'List',
-    );
-
-    unmount();
-    expect(document.title).toBe('Черкаси ФАМ');
-    expect(document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content).toBe(
-      'Default',
-    );
+  it('sets the title, the description and the social preview texts', () => {
+    render(meta);
+    expect(document.title).toBe('Матчі');
+    expect(content('meta[name="description"]')).toBe('List');
+    expect(content('meta[property="og:title"]')).toBe('Матчі');
+    expect(content('meta[property="og:description"]')).toBe('List');
   });
 
-  it('uses just the site name without a title', () => {
-    renderHook(() => usePageMeta());
-    expect(document.title).toBe('Черкаси ФАМ');
-  });
-
-  it('adds a noindex robots tag and removes it on unmount', () => {
-    const { unmount } = renderHook(() => usePageMeta({ title: 'Не знайдено', noindex: true }));
-    expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex');
-    unmount();
+  it('adds noindex and removes it on the next page', () => {
+    const { rerender } = render({ ...meta, noindex: true });
+    expect(content('meta[name="robots"]')).toBe('noindex');
+    rerender(meta);
     expect(document.querySelector('meta[name="robots"]')).toBeNull();
   });
 
-  it('adds a canonical link for the current path when the site address is set', () => {
+  it('keeps one canonical link, with a slash only on the home page', () => {
     vi.stubEnv('VITE_SITE_URL', 'https://example.com/');
-    history.pushState({}, '', '/matches/');
-    const { unmount } = renderHook(() => usePageMeta({ title: 'Матчі' }));
-    expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(
-      'https://example.com/matches',
-    );
-    unmount();
-    expect(document.querySelector('link[rel="canonical"]')).toBeNull();
-  });
-
-  it('uses the bare site address as canonical on the home page', () => {
-    vi.stubEnv('VITE_SITE_URL', 'https://example.com');
-    renderHook(() => usePageMeta());
-    expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(
-      'https://example.com',
-    );
+    const { rerender } = render(meta);
+    expect(canonical()).toBe('https://example.com/matches');
+    expect(content('meta[property="og:url"]')).toBe('https://example.com/matches');
+    rerender({ ...meta, path: '/' });
+    expect(canonical()).toBe('https://example.com/');
+    expect(document.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
   });
 
   it('adds no canonical without a site address or on noindex pages', () => {
     vi.stubEnv('VITE_SITE_URL', '');
-    renderHook(() => usePageMeta());
-    expect(document.querySelector('link[rel="canonical"]')).toBeNull();
-
+    const { rerender } = render(meta);
+    expect(canonical()).toBeUndefined();
     vi.stubEnv('VITE_SITE_URL', 'https://example.com');
-    renderHook(() => usePageMeta({ noindex: true }));
-    expect(document.querySelector('link[rel="canonical"]')).toBeNull();
+    rerender({ ...meta, title: 'x', noindex: true });
+    expect(canonical()).toBeUndefined();
+  });
+
+  it('replaces the structured data of the previous page', () => {
+    const { rerender } = render({ ...meta, jsonLd: [{ '@type': 'A' }] });
+    rerender({ ...meta, jsonLd: [{ '@type': 'B' }] });
+    const scripts = document.querySelectorAll('script[data-page-ld]');
+    expect(scripts).toHaveLength(1);
+    expect(scripts[0].textContent).toBe('{"@type":"B"}');
   });
 });

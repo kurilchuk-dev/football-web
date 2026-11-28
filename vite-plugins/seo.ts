@@ -64,8 +64,11 @@ export function structuredData(siteUrl: string | undefined): Plugin {
         '@context': 'https://schema.org',
         '@type': 'SportsTeam',
         name: 'Черкаси ФАМ',
-        sport: 'Soccer',
+        sport: 'Futsal',
         url: trimSlash(siteUrl),
+        logo: `${trimSlash(siteUrl)}/icon-512.png`,
+        address: { '@type': 'PostalAddress', addressLocality: 'Черкаси', addressCountry: 'UA' },
+        sameAs: ['https://www.instagram.com/ufam_cherkasy/'],
       };
       return [
         {

@@ -195,9 +195,15 @@ export interface components {
       readonly id: number;
       readonly home_team: components['schemas']['Team'];
       readonly away_team: components['schemas']['Team'];
-      /** Format: int64 */
+      /**
+       * Голи господарів
+       * Format: int64
+       */
       home_score?: number | null;
-      /** Format: int64 */
+      /**
+       * Голи гостей
+       * Format: int64
+       */
       away_score?: number | null;
       /** Format: date */
       readonly date: string | null;
@@ -206,37 +212,55 @@ export interface components {
       /** Format: date-time */
       readonly played_at: string | null;
       /**
+       * Тур
        * Format: int64
-       * @description Round (matchday) number, e.g. 5 for round 5.
+       * @description Номер туру, наприклад 5.
        */
       round?: number | null;
+      /**
+       * Місце
+       * @description Де грають, наприклад назва зали та місто. Показується на сторінці матчу.
+       */
+      venue?: string;
+      /**
+       * Звіт про матч
+       * @description Кілька абзаців про гру. Вони з'являться на сторінці матчу й у пошуку.
+       */
+      report?: string;
     };
     Player: {
       readonly id: number;
+      /** Ім'я */
       first_name: string;
+      /** Прізвище */
       last_name: string;
       /**
+       * Номер
        * Format: int64
-       * @description Shirt number; leave empty if not assigned yet.
+       * @description Номер на футболці; залиште порожнім, якщо ще не призначено.
        */
       number?: number | null;
       /**
+       * Фото
        * Format: uri
-       * @description Portrait shown on the team page.
+       * @description Портрет для сторінки команди.
        */
       photo?: string | null;
     };
     /**
-     * @description * `head_coach` - Head coach
-     *     * `assistant` - Assistant coach
-     *     * `manager` - Team manager
+     * @description * `head_coach` - Головний тренер
+     *     * `assistant` - Помічник тренера
+     *     * `manager` - Менеджер команди
      * @enum {string}
      */
     RoleEnum: 'head_coach' | 'assistant' | 'manager';
     StaffMember: {
       readonly id: number;
+      /** Ім'я */
       first_name: string;
+      /** Прізвище */
       last_name: string;
+      /** Посада */
       role: components['schemas']['RoleEnum'];
       readonly role_display: string;
     };
@@ -265,12 +289,22 @@ export interface components {
     };
     Team: {
       readonly id: number;
+      /** Назва */
       name: string;
+      /** Місто */
       city?: string;
+      /** Наша команда */
       is_our_team?: boolean;
-      /** Format: uri */
+      /**
+       * Логотип
+       * Format: uri
+       */
       logo?: string | null;
-      /** Format: uri */
+      /**
+       * Фото команди
+       * Format: uri
+       * @description Загальне фото команди: відкривається на сайті, коли натиснути на команду.
+       */
       photo?: string | null;
     };
   };
@@ -309,7 +343,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description A unique integer value identifying this match. */
+        /** @description A unique integer value identifying this матч. */
         id: number;
       };
       cookie?: never;
@@ -373,6 +407,8 @@ export interface operations {
   players_list: {
     parameters: {
       query?: {
+        /** @description true: show only players of our team (the one marked as ours), no id needed */
+        our_team?: boolean;
         /** @description Show only players of the team with this id */
         team?: number;
       };
@@ -397,7 +433,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description A unique integer value identifying this player. */
+        /** @description A unique integer value identifying this гравець. */
         id: number;
       };
       cookie?: never;
@@ -438,7 +474,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description A unique integer value identifying this staff member. */
+        /** @description A unique integer value identifying this тренерський штаб. */
         id: number;
       };
       cookie?: never;
@@ -498,7 +534,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description A unique integer value identifying this team. */
+        /** @description A unique integer value identifying this команда. */
         id: number;
       };
       cookie?: never;

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useIsClient } from '@/seo/useIsClient';
 import styles from './Reveal.module.css';
 
 interface RevealProps {
@@ -11,8 +12,12 @@ interface RevealProps {
 /** Fades and slides its content in the first time it scrolls into view. */
 export function Reveal({ children, className, delay = 0 }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  // Without IntersectionObserver (old browsers, jsdom) show everything at once.
-  const [visible, setVisible] = useState(() => typeof IntersectionObserver === 'undefined');
+  const isClient = useIsClient();
+  // Without IntersectionObserver (old browsers, jsdom) show everything at once. The same for a
+  // built page: its text must be visible without any script.
+  const [animated] = useState(() => isClient && typeof IntersectionObserver !== 'undefined');
+  const [seen, setSeen] = useState(false);
+  const visible = !animated || seen;
 
   useEffect(() => {
     const element = ref.current;
@@ -20,7 +25,7 @@ export function Reveal({ children, className, delay = 0 }: RevealProps) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          setSeen(true);
           observer.disconnect();
         }
       },

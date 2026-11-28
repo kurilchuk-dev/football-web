@@ -33,7 +33,7 @@ function preconnect(apiUrl: string | undefined): Plugin {
   };
 }
 
-// Pages that should be in the sitemap (keep in sync with the routes in src/App.tsx).
+// Sitemap of a build without prerender; the prerender replaces it with every page.
 const SITE_ROUTES = ['/', '/matches', '/standings', '/team'];
 
 /**
@@ -48,6 +48,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
   return {
     define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
+    // scripts/prerender.mjs reads which files belong to which page.
+    build: { manifest: true },
     plugins: [
       react(),
       preconnect(env.VITE_API_URL),

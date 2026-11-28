@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useRefreshAfterResult } from '@/features/matches/useRefreshAfterResult';
 import { useOurTeam } from '@/features/teams/api';
 import { useAccentFromLogo } from '@/features/theme/useAccentFromLogo';
 import { ApiStatusNotice } from '../ApiStatusNotice/ApiStatusNotice';
@@ -12,6 +13,7 @@ export function Layout() {
   // The whole site takes its accent color from our team's logo.
   const { data: team, isSuccess } = useOurTeam();
   useAccentFromLogo(isSuccess ? (team?.logo ?? null) : undefined);
+  useRefreshAfterResult();
 
   return (
     <>

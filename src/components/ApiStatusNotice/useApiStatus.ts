@@ -21,5 +21,9 @@ export function useApiStatus(): ApiStatus {
     return 'idle';
   };
 
-  return useSyncExternalStore((onChange) => cache.subscribe(onChange), getSnapshot);
+  return useSyncExternalStore(
+    (onChange) => cache.subscribe(onChange),
+    getSnapshot,
+    () => 'idle',
+  );
 }

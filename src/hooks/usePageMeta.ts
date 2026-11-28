@@ -1,64 +1,60 @@
 import { useEffect } from 'react';
+import type { PageMeta } from '@/seo/pageMeta';
+import { canonicalUrl, siteUrl } from '@/seo/url';
 
-export const SITE_NAME = 'Черкаси ФАМ';
-
-interface PageMeta {
-  /** Page name; the site name is appended. Omit on the home page. */
-  title?: string;
-  description?: string;
-  /** Ask search engines not to index the page (e.g. the 404 page). */
-  noindex?: boolean;
-}
-
-function descriptionTag(): HTMLMetaElement | null {
-  return document.head.querySelector<HTMLMetaElement>('meta[name="description"]');
-}
-
-/** Canonical address of the current page, or undefined when the site address is not configured. */
-function canonicalHref(): string | undefined {
-  const site = import.meta.env.VITE_SITE_URL as string | undefined;
-  if (!site) return undefined;
-  const base = site.replace(/\/+$/, '');
-  const path = window.location.pathname.replace(/\/+$/, '');
-  return `${base}${path}`;
+/** The element in <head>, made if the page does not have it yet. */
+function headElement<K extends 'meta' | 'link'>(
+  tag: K,
+  name: string,
+  value: string,
+): HTMLElementTagNameMap[K] {
+  const found = document.head.querySelector<HTMLElementTagNameMap[K]>(`${tag}[${name}="${value}"]`);
+  if (found) return found;
+  const element = document.createElement(tag);
+  element.setAttribute(name, value);
+  document.head.append(element);
+  return element;
 }
 
 /**
- * Sets the tab title, description and canonical address of the current page and puts them back
- * when the page is left, so every route has its own title in the history and in search results.
- * One index.html serves all routes, so a canonical link cannot be written into it statically.
+ * Sets the title, description, canonical address, social preview texts and structured data of the
+ * current page. The built HTML already has them; this keeps them right while the visitor moves
+ * between pages without reloading.
  */
-export function usePageMeta({ title, description, noindex = false }: PageMeta = {}) {
+export function usePageMeta({ title, description, path, noindex = false, jsonLd }: PageMeta) {
+  // The objects are made on every render, so they are compared by their text.
+  const data = JSON.stringify(jsonLd ?? []);
+
   useEffect(() => {
-    const previousTitle = document.title;
-    document.title = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
+    document.title = title;
+    headElement('meta', 'name', 'description').content = description;
 
-    const tag = descriptionTag();
-    const previousDescription = tag?.content;
-    if (tag && description) tag.content = description;
-
-    let robots: HTMLMetaElement | undefined;
-    if (noindex) {
-      robots = document.createElement('meta');
-      robots.name = 'robots';
-      robots.content = 'noindex';
-      document.head.append(robots);
-    }
-
-    let canonical: HTMLLinkElement | undefined;
-    const href = noindex ? undefined : canonicalHref();
-    if (href) {
-      canonical = document.createElement('link');
-      canonical.rel = 'canonical';
-      canonical.href = href;
-      document.head.append(canonical);
-    }
-
-    return () => {
-      document.title = previousTitle;
-      if (tag && previousDescription !== undefined) tag.content = previousDescription;
-      robots?.remove();
-      canonical?.remove();
+    const og = (property: string, content: string) => {
+      headElement('meta', 'property', property).content = content;
     };
-  }, [title, description, noindex]);
+    og('og:title', title);
+    og('og:description', description);
+
+    if (noindex) headElement('meta', 'name', 'robots').content = 'noindex';
+    else document.head.querySelector('meta[name="robots"]')?.remove();
+
+    const site = siteUrl();
+    if (site && !noindex) {
+      const href = canonicalUrl(site, path ?? window.location.pathname);
+      headElement('link', 'rel', 'canonical').href = href;
+      og('og:url', href);
+    } else {
+      document.head.querySelector('link[rel="canonical"]')?.remove();
+      document.head.querySelector('meta[property="og:url"]')?.remove();
+    }
+
+    document.head.querySelectorAll('script[data-page-ld]').forEach((script) => script.remove());
+    for (const item of JSON.parse(data) as object[]) {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.dataset.pageLd = '';
+      script.textContent = JSON.stringify(item);
+      document.head.append(script);
+    }
+  }, [title, description, path, noindex, data]);
 }
