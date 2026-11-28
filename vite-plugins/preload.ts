@@ -29,7 +29,7 @@ export function preloadScript({
   return `(function(){try{
 var saved=localStorage.getItem(${JSON.stringify(storageKey)});
 var at=saved?saved.indexOf('"timestamp":'):-1;
-var usable=${buster === undefined ? 'true' : `saved.indexOf(${JSON.stringify(`"buster":${JSON.stringify(buster)}`)})>=0`};
+var usable=${buster === undefined ? 'true' : `!!saved&&saved.indexOf(${JSON.stringify(`"buster":${JSON.stringify(buster)}`)})>=0`};
 if(usable&&at>=0&&Date.now()-parseInt(saved.slice(at+12),10)<${freshMs})return;
 var path=location.pathname;
 while(path.length>1&&path.charAt(path.length-1)==='/')path=path.slice(0,-1);
