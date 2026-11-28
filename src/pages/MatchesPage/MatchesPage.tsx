@@ -3,32 +3,40 @@ import { useResults, useUpcoming } from '@/features/matches/api';
 import { MatchList } from '@/features/matches/components/MatchList/MatchList';
 import { MatchTabs } from '@/features/matches/components/MatchTabs/MatchTabs';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { STATIC_META } from '@/seo/pageMeta';
+import { useIsClient } from '@/seo/useIsClient';
 import styles from './MatchesPage.module.css';
 
 type TabId = 'results' | 'calendar';
 
 export function MatchesPage() {
-  usePageMeta({
-    title: 'Матчі',
-    description: 'Результати зіграних матчів і календар найближчих ігор команди «Черкаси ФАМ».',
-  });
+  usePageMeta(STATIC_META.matches);
+  const isClient = useIsClient();
   const results = useResults();
   const upcoming = useUpcoming();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // The active tab lives in the URL (?tab=calendar) so it can be shared.
-  const tab: TabId = searchParams.get('tab') === 'calendar' ? 'calendar' : 'results';
+  // The built page cannot know the query, so it always has the results.
+  const tab: TabId = isClient && searchParams.get('tab') === 'calendar' ? 'calendar' : 'results';
   const selectTab = (id: TabId) =>
     setSearchParams(id === 'results' ? {} : { tab: id }, { replace: true });
 
-  if (results.isLoading || upcoming.isLoading) return <p>Завантаження...</p>;
+  const heading = <h1 className={styles.title}>Матчі: футзал Черкаського району</h1>;
+  const message = (value: string) => (
+    <>
+      {heading}
+      <p>{value}</p>
+    </>
+  );
+  if (results.isLoading || upcoming.isLoading) return message('Завантаження...');
   if (results.isError || upcoming.isError || !results.data || !upcoming.data) {
-    return <p>Не вдалося завантажити матчі.</p>;
+    return message('Не вдалося завантажити матчі.');
   }
 
   return (
     <>
-      <h1 className={styles.title}>Матчі</h1>
+      {heading}
       <MatchTabs
         active={tab}
         onChange={selectTab}

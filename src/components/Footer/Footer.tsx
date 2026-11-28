@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
 const CONTACTS = [
@@ -78,6 +79,10 @@ export function Footer() {
           </li>
         ))}
       </ul>
+      <nav className={styles.pages} aria-label="Про сайт">
+        <Link to="/about">Про команду</Link>
+        <Link to="/privacy">Конфіденційність</Link>
+      </nav>
     </footer>
   );
 }

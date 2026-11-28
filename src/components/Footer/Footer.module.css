@@ -25,6 +25,19 @@
   line-height: 1.55;
 }
 
+.pages {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.pages a:hover {
+  color: var(--accent);
+}
+
 .list {
   display: grid;
   gap: 10px;

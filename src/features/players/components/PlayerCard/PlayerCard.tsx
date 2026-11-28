@@ -27,7 +27,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
             <img
               className={styles.photo}
               src={optimizeImage(photo, PHOTO_WIDTH)}
-              alt=""
+              alt={`${player.first_name} ${player.last_name}, Черкаси ФАМ`}
               loading="lazy"
               onError={() => setFailedPhoto(photo)}
             />

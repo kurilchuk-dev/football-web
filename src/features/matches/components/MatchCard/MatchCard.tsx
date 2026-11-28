@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import type { Match } from '@/api/types';
 import { TeamLogo } from '@/components/TeamLogo/TeamLogo';
+import { matchPath } from '@/seo/slug';
 import {
   DATE_TBD,
   TIME_TBD,
@@ -19,10 +21,17 @@ interface MatchCardProps {
   showDate?: boolean;
   /** Offer the announcement picture of the match (shown only while it is still to be played). */
   announce?: boolean;
+  /** The whole row leads to the page of the match (off on that page itself). */
+  linked?: boolean;
 }
 
 /** One match as a dense scoreboard row (livescore style). */
-export function MatchCard({ match, showDate = false, announce = false }: MatchCardProps) {
+export function MatchCard({
+  match,
+  showDate = false,
+  announce = false,
+  linked = true,
+}: MatchCardProps) {
   const { home_team: home, away_team: away } = match;
   const ours = home.is_our_team || away.is_our_team;
   const played = isPlayed(match);
@@ -39,6 +48,13 @@ export function MatchCard({ match, showDate = false, announce = false }: MatchCa
     <article
       className={`${styles.row} ${ours ? styles.ours : ''} ${showDate ? styles.withDate : ''} ${unknown ? styles.withUnknown : ''}`}
     >
+      {linked && (
+        <Link
+          to={matchPath(match)}
+          className={styles.cover}
+          aria-label={`Матч ${home.name} — ${away.name}`}
+        />
+      )}
       <div className={styles.when}>
         <div className={styles.whenText}>
           {hasDate(match) ? (
@@ -55,7 +71,11 @@ export function MatchCard({ match, showDate = false, announce = false }: MatchCa
           ) : (
             <span className={styles.tbd}>{DATE_TBD}</span>
           )}
-          {announce && !played && <AnnounceButton match={match} />}
+          {announce && !played && (
+            <span className={styles.above}>
+              <AnnounceButton match={match} />
+            </span>
+          )}
         </div>
       </div>
 
