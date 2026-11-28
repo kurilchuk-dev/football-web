@@ -6,7 +6,7 @@ import { NextMatchCard } from '@/features/home/components/NextMatchCard/NextMatc
 import { RecentResults } from '@/features/home/components/RecentResults/RecentResults';
 import { SeasonCard } from '@/features/home/components/SeasonCard/SeasonCard';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { SEASON, SITE_NAME, STATIC_META } from '@/seo/pageMeta';
+import { SITE_NAME, STATIC_META } from '@/seo/pageMeta';
 import styles from './HomePage.module.css';
 
 /**
@@ -17,11 +17,7 @@ export function HomePage() {
   usePageMeta(STATIC_META.home);
   return (
     <div className={styles.page}>
-      <h1 className={text.title}>{SITE_NAME}: футзал у Черкасах</h1>
-      <p className={text.lead}>
-        Команда «{SITE_NAME}» грає в чемпіонаті Черкаського району з футзалу {SEASON}. Тут
-        найближчий матч, результати, турнірна таблиця та склад.
-      </p>
+      <h1 className={text.hidden}>{SITE_NAME}: футзал у Черкасах</h1>
       <div className={styles.hero}>
         <Reveal className={styles.cell}>
           <NextMatchCard />
