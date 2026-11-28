@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Match, StandingRow } from '@/api/types';
 import { calculateStandings, type EngineTeam } from '@/features/standings/calculate';
@@ -56,7 +57,7 @@ beforeEach(() => {
 
 describe('StandingsPage simulation', () => {
   it('starts with the real table and the Import button, without the simulation', () => {
-    render(<StandingsPage />);
+    render(<StandingsPage />, { wrapper: MemoryRouter });
 
     expect(screen.getByRole('button', { name: 'Таблиця' }).getAttribute('aria-pressed')).toBe(
       'true',
@@ -67,7 +68,7 @@ describe('StandingsPage simulation', () => {
   });
 
   it('shows the planned matches in the simulation, with the table at the top and no Import', async () => {
-    render(<StandingsPage />);
+    render(<StandingsPage />, { wrapper: MemoryRouter });
 
     await openSimulation();
 
@@ -80,7 +81,7 @@ describe('StandingsPage simulation', () => {
   });
 
   it('recalculates the table when both scores of one match are typed, leaving the other empty', async () => {
-    render(<StandingsPage />);
+    render(<StandingsPage />, { wrapper: MemoryRouter });
     await openSimulation();
 
     // Наші beat Темп 4:0. The second planned match stays empty.
@@ -97,7 +98,7 @@ describe('StandingsPage simulation', () => {
   });
 
   it('accepts digits only and at most two', async () => {
-    render(<StandingsPage />);
+    render(<StandingsPage />, { wrapper: MemoryRouter });
     await openSimulation();
 
     const input = field('Наші', OURS_TEMP) as HTMLInputElement;
@@ -107,7 +108,7 @@ describe('StandingsPage simulation', () => {
   });
 
   it('keeps the typed scores when switching back and forth, and clears them on request', async () => {
-    render(<StandingsPage />);
+    render(<StandingsPage />, { wrapper: MemoryRouter });
     await openSimulation();
     await userEvent.type(field('Наші', OURS_TEMP), '4');
     await userEvent.type(field('Темп', OURS_TEMP), '0');
@@ -125,7 +126,7 @@ describe('StandingsPage simulation', () => {
   });
 
   it('counts a 0:0 draw as a result', async () => {
-    render(<StandingsPage />);
+    render(<StandingsPage />, { wrapper: MemoryRouter });
     await openSimulation();
 
     await userEvent.type(field('Барс', BARS_OURS), '1');
