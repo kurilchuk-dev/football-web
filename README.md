@@ -47,12 +47,23 @@ Both are built into the files, so a change needs a new build.
 | `src/api/`        | requests, generated types, caching and prefetching    |
 | `vite-plugins/`   | build steps: data and font preloading, SEO files      |
 
+## SEO: pages made at build time
+
+With `VITE_SITE_URL` and `VITE_API_URL` set, `npm run build` writes a ready HTML file for every
+page, match and team (`scripts/prerender.mjs`), plus `sitemap.xml` and `404.html`. If the API
+cannot be read the build fails. `PRERENDER=off` skips this step.
+
+Whatever the build cannot know (the time, the browser, its storage, the query of the address) must
+be read only after `useIsClient()` is true, or React throws the built HTML away. Titles,
+descriptions and structured data are in `src/seo/pageMeta.ts`.
+
 ## Things to know
 
 - The standings rules are repeated in `src/features/standings/calculate.ts` for the simulator. They
   must match `standings/services.py` of the API; after a change run
   `scripts/standings_fixtures.py` and commit the new fixtures.
-- A new page needs a route in `src/App.tsx`, and an entry in `SITE_ROUTES` (`vite.config.ts`) and in
+- A new page needs a route in `src/App.tsx` and `src/routes.ts`, a place in `sitePages`
+  (`src/entry-server.tsx`), and an entry in `SITE_ROUTES` (`vite.config.ts`) and in
   `ROUTE_PRELOADS` (`src/api/endpoints.ts`).
 
 ## Workflow
